@@ -197,7 +197,7 @@ File **main.o**
 </p>
 </details>
 
-<<br>
+<br>
 
 <details><summary><b> 2. Macro</b></summary>
 <p>
@@ -2216,7 +2216,7 @@ Bitmask là một số nhị phân được sử dụng kết hợp với các p
 
 - Sử dụng phép AND để kiểm tra xem một bit cụ thể có đang được bật hay không.
 
-💻 Ví dụ:
+💻 Ví dụ 1:
 ```cpp
 int num = 0b1010; // Số nhị phân: 1010
 int mask = 0b0010; // Mặt nạ để kiểm tra bit thứ 2
@@ -2228,8 +2228,123 @@ if (num & mask) {
 }
 ```
 
+💻 Ví dụ 2:
+```cpp
+uint8_t num = 0b11011010;
+uint8_t mask = 0b00001100; // Mặt nạ để kiểm tra bit thứ 2 và 3
+
+if (num & mask) {
+    printf("Ít nhất một trong hai bit thứ 2 và 3 được bật\n");
+} else {
+    printf("Cả hai bit thứ 2 và 3 đều tắt\n");
+}
+```
+
+<br>
+
 </p>
 </details>
+
+<details><summary><b>📚 Bật một bit (bit setting)</b></summary>
+<p>
+
+- Sử dụng phép OR để bật một bit cụ thể.
+
+💻 Ví dụ:
+```cpp
+int num = 0b1001; // Số nhị phân: 1001
+int mask = 0b0100; // Mặt nạ để bật bit thứ 3
+
+num = num | mask; // num bây giờ là 1101
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 Tắt một bit (bit clearing)</b></summary>
+<p>
+
+- Sử dụng phép AND với phép NOT để tắt một bit cụ thể.
+
+💻 Ví dụ:
+```cpp
+int num = 0b1011; // Số nhị phân: 1011
+int mask = 0b1101; // Mặt nạ để tắt bit thứ 2 (NOT(0010) = 1101)
+
+num = num & mask; // num bây giờ là 1001
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 Đảo một bit (bit toggling)</b></summary>
+<p>
+
+- Sử dụng phép XOR để đảo một bit cụ thể.
+
+💻 Ví dụ:
+```cpp
+int num = 0b1010; // Số nhị phân: 1010
+int mask = 0b0010; // Mặt nạ để đảo bit thứ 2
+
+num = num ^ mask; // num bây giờ là 1000
+```
+
+<br>
+
+</p>
+</details>
+
+</p>
+</details>
+
+<details><summary><b>8.4. Ứng dụng</b></summary>
+<p>
+
+📚 **Quản lý cờ trạng thái (Status Flags)**: 
+
+- Trong các hệ thống nhúng, việc theo dõi trạng thái của các thiết bị hoặc các module khác nhau là rất phổ biến. Bitmask cho phép lưu trữ nhiều cờ trạng thái trong một biến duy nhất, giúp tiết kiệm bộ nhớ và dễ dàng kiểm tra hoặc cập nhật trạng thái đó.
+
+💻 Ví dụ:
+```cpp
+uint8_t status_flags = 0x00; // Biến lưu trữ cờ trạng thái
+
+// Đặt bit thứ 2 để báo hiệu thiết bị đang hoạt động
+status_flags |= (1 << 2);
+
+// Kiểm tra xem bit thứ 2 có được đặt không
+if (status_flags & (1 << 2)) {
+    // Thiết bị đang hoạt động
+}
+
+// Xóa bit thứ 2 để báo hiệu thiết bị ngừng hoạt động
+status_flags &= ~(1 << 2);
+```
+
+<br>
+
+📚 **Quản lý I/O (Input/Output) Ports**: 
+
+- Trong các hệ thống nhúng, bitmask được sử dụng để thiết lập hoặc đọc các chân I/O của vi điều khiển một cách hiệu quả.
+
+💻 Ví dụ: Đặt một chân I/O thành mức cao mà không ảnh hưởng đến các chân khác:
+``` PORTA |= (1 << 3); // Đặt chân PA3 lên mức cao ```
+
+💻 Ví dụ: Xóa (đưa về mức thấp) một chân I/O:
+``` PORTA &= ~(1 << 3); // Đưa chân PA3 về mức thấp ```
+
+<br>
+
+📚 **Đọc và Ghi các Thanh ghi (Registers)**: 
+
+- Bitmask giúp thao tác trực tiếp với các thanh ghi của vi điều khiển một cách dễ dàng, cho phép cấu hình và điều khiển các phần cứng ngoại vi như bộ định thời (timers), UART, ADC, v.v.
+
+💻 Ví dụ: Cấu hình bit điều khiển trong một thanh ghi:
+``` TCCR0 |= (1 << CS01); // Đặt bit CS01 để chọn bộ chia tần số cho bộ định thời ```
 
 </p>
 </details>
