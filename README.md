@@ -1,5 +1,5 @@
 # C
-<details><summary>Nhấp vào để xem chi tiết</summary>
+<details><summary>Nhấp vào đây để xem chi tiết</summary>
 <p>
 
 <details><summary><b>1. Compiler</b></summary>
@@ -4106,7 +4106,7 @@ int isFull(Queue queue){
 </details>
 
 # C++
-<details><summary>Nhấp vào để xem chi tiết</summary>
+<details><summary>Nhấp vào đây để xem chi tiết</summary>
 <p>
 
 </p>
