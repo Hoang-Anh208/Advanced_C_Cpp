@@ -1913,9 +1913,6 @@ int main() {
 </p>
 </details>
 
-</p>
-</details>
-
 <details><summary><b>7. goto - thư viện setjmp</b></summary>
 <p>
 
@@ -2170,6 +2167,11 @@ int main(int argc, char const *argv[])
 
 </p>
 </details>
+
+</p>
+</details>
+
+
 
 # C++
 <details><summary>Nhấp vào để xem chi tiết</summary>
