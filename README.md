@@ -3565,6 +3565,9 @@ void function() {
 </p>
 </details>
 
+</p>
+</detail>
+
 <br>
 
 <details><summary><b>12. Linked List</b></summary>
