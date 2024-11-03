@@ -2354,6 +2354,609 @@ status_flags &= ~(1 << 2);
 
 <br>
 
+<details><summary><b>9. Struct - Union</b></summary>
+<p>
+
+<details><summary><b>9.1. Struct</b></summary>
+<p>
+
+<details><summary><b>📚 Cơ bản về Struct</b></summary>
+<p>
+	
+- struct là một cấu trúc dữ liệu cho phép tự định nghĩa một kiểu dữ liệu mới bằng cách nhóm các biến có các kiểu dữ liệu khác nhau lại với nhau.
+- struct cho phép tạo ra một thực thể dữ liệu lớn hơn và có tổ chức hơn từ các thành viên (members) của nó.
+- Cú pháp:
+
+**Cách 1: Khai báo tường minh**
+```cpp
+struct structureName{       struct student_t{       struct student_t sv1;
+    dataType1 member1;          char ten[30];       struct student_t sv2;
+    dataType2 member2;          int tuoi;           ...
+    ...                         int MSSV;           hoặc
+};                          };                      struct student_t sv[50];
+```
+
+**Cách 2: Khai báo không tường minh**
+```cpp
+typedef struct{             typedef struct{         student_t sv1;
+    dataType1 member1;          char ten[30];       student_t sv2;
+    dataType2 member2;          int tuoi;           ...
+    ...                         int MSSV;           student_t sv[20];
+}structureName;             }student_t;
+```
+
+- Địa chỉ của struct chính là địa chỉ của member đầu tiên.
+
+- Truy xuất dữ liệu:
+
+	+ Sử dụng "." để truy xuất tới thành viên khi khai báo biến bình thường (int, char,…).
+
+	+ Sử dụng "->" để truy xuất tới thành viên khi khai báo biến là con trỏ.
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 Data Structure Alignment</b></summary>
+<p>
+
+Data alignment là quá trình sắp xếp các member của một struct sao cho mỗi member nằm ở địa chỉ phù hợp với yêu cầu căn chỉnh của nó. Điều này giúp CPU truy xuất dữ liệu nhanh hơn và tránh các lỗi tiềm ẩn khi truy cập bộ nhớ.
+
+Bộ xử lý thường yêu cầu các thành phần dữ liệu nằm trên địa chỉ được căn chỉnh theo bội số của kích thước phần tử đó. Ví dụ:
+
+- double (8 byte): thường yêu cầu được căn chỉnh trên địa chỉ chia hết cho 8 (0x00, 0x08, 0x10,...)
+- int, int32_t, uint32_t (4 byte): thường yêu cầu được căn chỉnh trên địa chỉ chia hết cho 4 (0x00, 0x04, 0x08,...).
+- float, uint16_t (2 byte): thường yêu cầu được căn chỉnh trên địa chỉ chia hết cho 2 (0x00, 0x02, 0x04,...).
+- char, uint8_t (1 byte): không yêu cầu căn chỉnh đặc biệt
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 Data Padding</b></summary>
+<p>
+
+Padding là các byte trống, không chứa dữ liệu và được thêm vào giữa các thành viên của cấu trúc để đảm bảo sự căn chỉnh bộ nhớ (alignment) phù hợp với kiến trúc phần cứng. Việc này giúp CPU truy cập dữ liệu nhanh hơn, nhưng cũng làm tăng kích thước tổng thể của cấu trúc.
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 Kích thước của struct</b></summary>
+<p>
+
+**Kích thước Struct bằng tổng các kích thước của các member và padding (nếu có).**
+
+💻 Ví dụ 1:
+```cpp
+#include <stdio.h>
+#include <stdint.h>
+
+typedef struct{
+    uint32_t var1;  // 4 byte
+    uint8_t  var2;  // 1 byte
+    uint16_t var3;  // 2 byte
+} frame;
+
+int main(int argc, char const *argv[])
+{
+    printf("Size of frame: %d\n", sizeof(frame));
+
+    frame frame;
+    printf("Address of var1: %p\n", &frame.var1);
+    printf("Address of var2: %p\n", &frame.var2);
+    printf("Address of var3: %p\n", &frame.var3);
+    return 0;
+}
+```
+
+**Kết quả:**
+```cpp
+Size of frame: 8
+Address of var1: 00000048F3DFF6D8
+Address of var2: 00000048F3DFF6DC
+Address of var3: 00000048F3DFF6DE
+```
+
+**Giải thích:**
+
+![image](https://github.com/user-attachments/assets/0f6e0cdf-c716-41f1-a3db-fa700344513b)
+
+📝 Compiler sẽ cấp phát địa chỉ , mỗi lần cấp phát bao nhiêu byte sẽ tùy thuộc vào kiểu dữ liệu nào có kích thước lớn nhất.
+
+📝 Lần 1: compiler cấp phát 4 bytes địa chỉ và ``` var1 ``` sử dụng.
+
+📝 Lần 2: compiler cấp phát 4 bytes, ``` var2 ``` chỉ sử dụng 1 byte, thừa 3 bytes.	
+
+📝 ``` var3 ``` sử dụng 2 bytes (dựa vào căn chỉnh) trong 3 bytes trên và còn thừa 1 byte và byte này sẽ trở thành padding.
+
+📝 Tổng kích thước struct frame trên là 8 bytes nhưng thực tế chỉ sử dụng 7 bytes.
+
+<br>
+
+💻 Ví dụ 2:
+```cpp
+#include <stdio.h>
+#include <stdint.h>
+
+typedef struct{
+    uint8_t  var1;  // 1 byte
+    uint32_t var2;  // 4 byte
+    uint16_t var3;  // 2 byte
+} frame;
+
+int main(int argc, char const *argv[])
+{
+    printf("Size of frame: %d\n", sizeof(frame));
+
+    frame frame;
+    printf("Address of var1: %p\n", &frame.var1);
+    printf("Address of var2: %p\n", &frame.var2);
+    printf("Address of var3: %p\n", &frame.var3);
+    return 0;
+}
+```
+
+**Kết quả:**
+```cpp
+Size of frame: 8
+Address of var1: 00000048F3DFF6D8
+Address of var2: 00000048F3DFF6DC
+Address of var3: 00000048F3DFF6DE
+```
+
+**Giải thích:**
+
+![image](https://github.com/user-attachments/assets/0b61bf95-9f0a-406c-8ad5-0263c7f55ad8)
+
+📝 Lần 1: compiler cấp phát 4 bytes và var1 sử dụng 1 byte trong 4 byte, thừa 3 byte và 3 bytes này không đủ để lưu trữ ``` var2 ``` nên compiler sẽ tiếp tục cấp phát 4 bytes và 3 bytes còn thừa sẽ trở thành 3 byte padding.
+
+📝 Lần 2: compiler cấp phát 4 bytes, var2 sử dụng hết.
+
+📝 Lần 3: compiler cấp phát 4 bytes, var3 sử dụng 2 trong 4 bytes và thừa 2 byte.
+
+📝 Tổng kích thước struct frame trên là 12 bytes nhưng thực tế chỉ sử dụng 7 bytes.
+
+<br>
+
+💻 Ví dụ 3:
+```cpp
+#include <stdio.h>
+#include <stdint.h>
+
+typedef struct{
+    uint8_t  var1[9];   // 1 byte
+    uint32_t var2[2];   // 4 byte
+    uint16_t var3[10];  // 2 byte
+} frame;
+
+int main(int argc, char const *argv[])
+{
+    printf("Size of frame: %d\n", sizeof(frame)); 
+    return 0;
+}
+```
+
+**Kết quả:**
+```cpp
+Size of frame: 40
+```
+
+**Giải thích:**
+
+![image](https://github.com/user-attachments/assets/af1f44b2-c870-4fd1-a125-7b76f0ffcbb7)
+
+<br>
+
+💻 Ví dụ 4:
+```cpp
+#include <stdio.h>
+#include <stdint.h>
+
+typedef struct{
+    uint8_t  var1[9];   // 1 byte   8 + 1 + 7 padding	  				 = 16 byte
+    uint64_t var2[3];   // 8 byte   8*3			  				 = 24 byte
+    uint16_t var3[10];  // 2 byte   0123 + 4567 + 89 + 4 padding = 8 + 8 + 4 + 4 padding = 24 byte
+    uint32_t var4[2];   // 4 byte   8							 = 8  byte
+} frame;
+
+int main(int argc, char const *argv[])
+{
+    printf("Size of frame: %d\n", sizeof(frame));   
+    return 0;
+}
+```
+
+**Kết quả:** ```72 byte```
+
+<br>
+
+</p>
+</details>
+
+</p>
+</details>
+
+<details><summary><b>9.2. Union</b></summary>
+<p>
+
+<details><summary><b>📚 Cơ bản về Union</b></summary>
+<p>
+
+- Union là một cấu trúc dữ liệu giúp kết hợp nhiều kiểu dữ liệu khác nhau vào một cùng một vùng nhớ.
+- Mục đích chính của union là tiết kiệm bộ nhớ bằng cách chia sẻ cùng một vùng nhớ cho các thành viên của nó. Điều này có nghĩa là, trong một thời điểm, chỉ một thành viên của union có thể được sử dụng.
+- Cú pháp:
+
+**Cách 1**
+```cpp
+union unionName{       	    union student_t{       union student_t sv1;
+    dataType1 member1;          char ten[30];       union student_t sv2;
+    dataType2 member2;          int tuoi;           ...
+    ...                         int MSSV;           hoặc
+};                           };                     union student_t sv[50];
+```
+
+**Cách 2**
+```cpp
+typedef union{             typedef union{           student_t sv1;
+    dataType1 member1;          char ten[30];       student_t sv2;
+    dataType2 member2;          int tuoi;           ...
+    ...                         int MSSV;           student_t sv[20];
+}unionName;                }student_t;
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 Kích thước Union</b></summary>
+<p>
+
+Kích thước của Union chính là tổng của kích thước của member có kích thước lớn nhất và padding (nếu có).
+
+💻
+```cpp
+#include <stdio.h>
+#include <stdint.h>
+
+typedef union{     //  Scope
+    uint8_t  var1; //  0 - 255
+    uint32_t var2; //  0 - 4294967295
+    uint16_t var3; //  0 - 65535
+} frame;
+
+int main(int argc, char const *argv[]){
+    frame data;
+    printf("Size = %d\n",sizeof(frame));
+    return 0;
+}
+```
+Kết quả: ```4 byte```
+
+<br>
+
+💻
+```cpp
+#include <stdio.h>
+#include <stdint.h>
+
+typedef union{        
+    uint8_t  var1[3]; //  3 byte + 1 padding
+    uint32_t var2[6]; //  4 byte * 6
+    uint16_t var3[9]; //  4 byte (01) + 4 byte (23) + 4 byte (45) + 4 byte (67) + 2 byte (8) + 2 padding
+} frame;
+
+int main(int argc, char const *argv[]){
+    frame data;
+    printf("Size = %d\n",sizeof(frame));
+    return 0;
+}
+```
+**Kết quả:** ```24 byte```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 Sử dụng vùng nhớ trong Union</b></summary>
+<p>
+
+💻
+```cpp
+#include <stdio.h>
+#include <stdint.h>
+
+typedef union{     //  Scope
+    uint8_t  var1; //  0 - 255
+    uint32_t var2; //  0 - 4294967295
+    uint16_t var3; //  0 - 65535
+} frame;
+
+int main(int argc, char const *argv[]){
+    frame data;
+    data.var1 = 5;
+    data.var2 = 6;
+    data.var3 = 7;
+
+// 0x005FFE9C  0x005FFE9D  0x005FFE9E  0x005FFE9F
+//      5
+//      6
+//      7
+
+    printf("Data.var1 = %d\n", data.var1);
+    printf("Data.var2 = %u\n", data.var2);
+    printf("Data.var3 = %d\n", data.var3);
+    return 0;
+}
+```
+**Kết quả**
+```cpp
+Data.var1 = 7
+Data.var2 = 7
+Data.var3 = 7
+```
+
+**Giải thích**
+
+📝 Khi gán 5 cho member var1 thì tại địa chỉ 0x5FFE9C sẽ có giá trị 5.
+
+📝 Khi gán 6 cho member var2, do các member sử dụng chung vùng nhớ nên tại địa chỉ 0x5FFE9C thì giá trị 6 sẽ ghi đè lên 5.
+
+📝 Tương tự với member var3, giá trị cuối cùng tại địa chỉ 0x5FFE9C là 7 nên giá trị của các member đều sẽ là 7.
+
+<br>
+
+💻
+```cpp
+#include <stdio.h>
+#include <stdint.h>
+
+typedef union{     //  Scope
+    uint8_t  var1; //  0 - 255
+    uint32_t var2; //  0 - 4294967295
+    uint16_t var3; //  0 - 65535
+} frame;
+
+int main(int argc, char const *argv[])
+{
+    frame data;
+    data.var2 = 4294967290;
+
+    printf("Data.var1 = %d\n", data.var1);
+    printf("Data.var2 = %u\n", data.var2);
+    printf("Data.var3 = %d\n", data.var3);
+    return 0;
+}
+```
+**Kết quả:**
+```cpp
+Data.var1 = 250
+Data.var2 = 4294967290
+Data.var3 = 65530
+```
+
+**Giải thích**
+
+📝 4294967290 = 0b11111111 111111111 11111111 1111010
+
+📝 Do các member dùng chung vùng nhớ nên giá trị các member bằng nhau và kích thước của union frame là 4 byte nên dữ liệu sẽ được như sau:
+
+```cpp
+// 0x005FFE9C  0x005FFE9D  0x005FFE9E  0x005FFE9F
+//  11111010    11111111    11111111    11111111
+```
+
+📝 member var1 có kiểu dữ liệu là uint8_t nên chỉ lấy 8 bit ở địa chỉ 0x005FFE9C -> var1 = 0b11111010 = 250
+
+📝 member var2 có kiểu dữ liệu là uint32_t nên giữ nguyên giá trị
+
+📝 member var3 có kiểu dữ liệu là uint16_t nên chỉ lấy 16 bit ở địa chỉ 0x005FFE9C và 0x005FFE9D -> var3 = 0b11111111 11111010 = 65530
+
+<br>
+
+</p>
+</details>
+
+</p>
+</details>
+
+<details><summary><b>9.3. So sánh Struct và Union</b></summary>
+<p>
+
+<details><summary><b>📚 Giống nhau</b></summary>
+<p>
+	
+- Đều do lập trình viên tự định nghĩa (user defined type).
+- Đều sử dụng dấu "." hoặc "->" để truy cập các phần tử (hoặc có thể gọi là thuộc tính).
+
+</p>
+</details>
+
+<details><summary><b>📚 Khác nhau</b></summary>
+<p>
+
+|           |   Struct  |   Union   |
+|-----------|-----------|-----------|
+| keyword   | Dùng keyword 'struct' để định nghĩa   | Dùng keyword 'union' để định nghĩa    |
+| size      | Tổng các kích thước của các member và padding (nếu có)    | Tổng của kích thước của member có kích thước lớn nhất và padding (nếu có)  |
+| Memory    | Mỗi member có vùng nhớ riêng biệt    | Các member dùng chung 1 vùng nhớ    |
+| Modify    | Thay đổi giá trị 1 member không ảnh hưởng các member khác   | Thay đổi giá trị bất kỳ member nào cũng ảnh hưởng các member khác    |
+| Truy cập  | Truy cập bất kỳ member ở thời điểm nào cũng được    | Trong một lúc chỉ truy cập được một member     |
+
+
+</p>
+</details>
+
+</p>
+</details>
+
+<details><summary><b>9.4. Ứng dụng</b></summary>
+<p>
+
+<details><summary><b>📚 Ứng dụng Struct</b></summary>
+<p>
+
+Các giao thức trong nhúng như UART, I2C, SPI khi sử dụng đều phải cấu hình các thông số; mỗi giao thức sẽ có các thông số cấu hình khác nhau.
+
+💻 UART
+```cpp
+typedef struct{
+  uint32_t USART_BaudRate;            /* USART communication baud rate */
+
+  uint16_t USART_WordLength;          /* the number of data bits transmitted or received in a frame */
+
+  uint16_t USART_StopBits;            /* Specifies the number of stop bits transmitted */
+
+  uint16_t USART_Parity;              /* Specifies the parity mode */
+ 
+  uint16_t USART_Mode;                /* pecifies wether the Receive or Transmit mode is enabled or disabled */
+
+  uint16_t USART_HardwareFlowControl; /* Specifies wether the hardware flow control mode is enabled or disabled */
+} USART_InitTypeDef;
+```
+	
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 Ứng dụng Union</b></summary>
+<p>
+
+- Một chân GPIO_pin tại một thời điểm có thể là input hoặc output.
+- Input có thể là đọc giá trị cảm biến từ bên ngoài.
+- Output có thể là xuất điện áp ra để điều khiển LED hoặc relay.
+- Để cấu hình thì dùng Union
+
+💻 
+```cpp
+#include <stdio.h>
+#include <stdint.h>
+
+typedef union{
+    struct{
+        uint32_t mode  : 2;  // 00: input, 01: output
+        uint32_t pull  : 2;  // 00: no pull, 01: pull-up, 10: pull-down
+        uint32_t speed : 2;  // 00: 2MHz, 01: 10MHz, 10: 50MHz
+        uint32_t reserved : 26; // các bit khác
+    } config;
+
+    uint32_t reg;
+} GPIO_Config;
+
+void configure_gpio(GPIO_Config *gpio, uint32_t mode, uint32_t pull, uint32_t speed) {
+    gpio->config.mode  = mode;  // Cấu hình chế độ
+    gpio->config.pull  = pull;  // Cấu hình pull-up/pull-down
+    gpio->config.speed = speed; // Cấu hình tốc độ
+}
+
+int main(int argc, char const *argv[])
+{
+    GPIO_Config GPIOA;
+
+    // Cấu hình PA0 là output
+    configure_gpio(&GPIOA, 1, 0, 2);
+
+    // Sử dụng GPIOA.reg để viết vào thanh ghi GPIO thực tế
+    write_gpio_register(GPIOA.reg);
+    return 0;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 Ứng dụng két hợp Struct và Union</b></summary>
+<p>
+
+- Truyền dữ liệu từ MCUA sang MCUB
+
+```cpp
+MCUA							   MCUB
+
+Data:
+{
+   id;	 	// 2 byte	   Data_Frame
+   data; 	// 4 byte	--------------->	   Data
+   check_sum; 	// 2 byte				Data_Frame
+}
+
+Data_Frame
+```
+
+📝 Cách làm thủ công: đưa từng byte vào mảng rồi truyền đi
+
+📝 Ví dụ: id=10, data=1234, checksum=70 thì chuyển thành chuỗi "10", "1234", "70" rồi đưa vào mảng.
+
+```cpp
+    id            data      checksum
+0x01 0x02 0x03 0x04 0x05 0x06 0x07 0x08
+ 1    0    1    2    3    4    7    0
+              mảng frame[8]
+```
+
+🤔 Có cách nào tự động convert vào mảng khi có dữ liệu không❓
+
+➡️ Sử dụng Struct + Union
+
+💻
+```cpp
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+
+typedef union{
+    struct {
+        uint8_t id[2];
+        uint8_t data[4];
+        uint8_t check_sum[2];
+    } data;
+    uint8_t frame[8];
+} Data_Frame;
+
+
+int main(int argc, char const *argv[])
+{
+    Data_Frame transmit_data, receive_data;
+    strcpy((char*)transmit_data.data.id, "10");
+    strcpy((char*)transmit_data.data.data, "1234");
+    strcpy((char*)transmit_data.data.check_sum, "70");
+    strcpy((char*)receive_data.frame, (char*)transmit_data.frame);
+    return 0;
+}
+```
+
+📝 Sủ dụng kiểu ``` uint8_t ``` cho các member để không có padding, tránh việc tốn bộ nhớ.
+
+📝 Kích thước của mỗi member trong union đều là 8 byte nên kích thước của union cũng là 8 byte.
+
+📝 Khi có dữ liệu, ví dụ copy các chuỗi "10", "1234", "70" vào ``` id, data, check_sum ``` thì mảng ``` frame ``` cũng tự động cập nhật dư liệu theo.
+
+📝 Khi cần truyền dữ liệu đi, ta chỉ cần sử dụng mảng ``` frame ``` để truyền đi.
+
+<br>
+
+</p>
+</details>
+
+</p>
+</details>
+
+</p>
+</details>
+
+</p>
+</details>
+
+<br>
+
 </p>
 </details>
 
