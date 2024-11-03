@@ -3948,7 +3948,7 @@ int isFull(Stack stack){
 
 - Queue là một cấu trúc dữ liệu tuân theo nguyên tắc "First In, First Out" (FIFO), nghĩa là phần tử đầu tiên được thêm vào hàng đợi sẽ là phần tử đầu tiên được lấy ra. 
 
-<br>
+![queue](https://drive.google.com/uc?id=1h6uwf3TiU4wA8eOgTSxVohd13ibq8szi)
 
 </p>
 </details>
@@ -3980,8 +3980,6 @@ Queue *initialize(int size){
 
 </p>
 </details>
-
-![queue](https://drive.google.com/uc?id=1h6uwf3TiU4wA8eOgTSxVohd13ibq8szi)
 
 <details><summary><b>📚 enqueue</b></summary>
 <p>
