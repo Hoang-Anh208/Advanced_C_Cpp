@@ -643,8 +643,6 @@ int main(int argc, char const *argv[])
 </p>
 </details>
 
-<br>
-
 <details><summary><b>3. Thư viện STDARG</b></summary>
 <p>
 
@@ -979,6 +977,1196 @@ int main() {
     return 0;
 }
 ```
+
+<br>
+
+</p>
+</details>
+
+</p>
+</details>
+
+<details><summary><b>4. Thư viện assert</b></summary>
+<p>
+
+- Cung cấp macro assert dùng để kiểm tra một điều kiện.
+- Nếu điều kiện đúng thì chương trình tiếp tục thực thi.
+- Nếu điều kiện sai thì chương trình dừng lại ngay lập tức và thông báo một thông điệp lỗi.
+- Dùng trong debug, dùng ``` #define NDEBUG ``` để tắt debug
+
+💻
+```cpp
+#include <stdio.h>
+#include <assert.h>
+
+#define LOG(condition, cmd) assert(condition && #cmd)
+
+double divide(int a, int b){
+    LOG(b != 0, Mau bang 0);
+    return (double)a/b;
+}
+
+int main(int argc, char const *argv[])
+{
+    int x = 6;    
+    LOG(x==5, X phai bang 5);
+    printf("x = %d\n", x);    
+    
+    printf("kq: %f\n", divide(6,0));
+    return 0;
+}
+```
+
+📝 Có thể thấy rằng khi sử dụng assert để kiểm tra lỗi, nếu có lỗi thì chương trình dừng ngay lập tức và không thực thi tiếp bất kỳ tác vụ nào.
+
+📝 Để hạn chế vấn đề trên thì nên sử dụng TRY, CATCH, THROW (sẽ nói ở bài **Thư viện setjmp**).
+
+<br>
+
+💻
+```cpp
+#include <stdio.h>
+#include <assert.h>
+
+#define ASSERT_IN_RANGE(val, min, max) assert((val) >= (min) && (val) <= (max))
+
+void setLevel(int level) {
+    ASSERT_IN_RANGE(level, 1, 10);
+    // Thiết lập cấp độ
+}
+```
+
+<br>
+
+💻
+```cpp
+#include <assert.h>
+#include <stdint.h>
+
+#define ASSERT_SIZE(type, size) assert(sizeof(type) == (size))
+
+void checkTypeSizes() {
+    ASSERT_SIZE(int, 4);
+    // Kiểm tra các kích thước kiểu dữ liệu khác
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>5. Pointer</b></summary>
+<p>
+
+<details><summary><b>5.1. Khái niệm về con trỏ</b></summary>
+<p>
+
+- Con trỏ (pointer) là một biến chứa địa chỉ của một đối tượng (biến, mảng hoặc hàm) khác.
+- Việc sử dụng con trỏ giúp thực hiện các thao tác trên bộ nhớ một cách linh hoạt hơn.
+
+</p>
+</details>
+
+<details><summary><b>5.2. Kích thước con trỏ</b></summary>
+<p>
+
+- Kích thước của con trỏ phụ thuộc vào **kiến trúc vi xử lý** hoặc **kiến trúc máy tính và trình biên dịch**.
+- Hệ thống 32-bit, kích thước của con trỏ là 4 byte.
+- Hệ thống 64-bit, kích thước của con trỏ là 8 byte.
+- SMT32: kiến trúc 32-bit (ARM Cortex-M) nên kích thước con trỏ là 4 byte.
+- STM8: kiến trúc 8-bit nên kích thước con trỏ là 1 byte.
+
+🖥️
+```cpp
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdint.h>
+
+int main(int argc, char const *argv[]){
+    printf("%d bytes\n", sizeof(int *));
+    printf("%d bytes\n", sizeof(uint8_t *));
+    printf("%d bytes\n", sizeof(int16_t *));
+    printf("%d bytes\n", sizeof(char *));
+    printf("%d bytes\n", sizeof(float *));
+    printf("%d bytes\n", sizeof(double *));
+    printf("%d bytes\n", sizeof(long *));
+    printf("%d bytes\n", sizeof(short *));
+    printf("%d bytes\n", sizeof(long long *));
+    printf("%d bytes\n", sizeof(bool *));
+    return 0;
+}
+```
+<br>
+
+🤔 Nếu kích thước con trỏ không thay đổi thì kiểu dữ liệu của nó sẽ ảnh hưởng như thế nào đến việc sử dụng nó❓ 
+
+➡️ **Kích thước bước nhảy khi tăng/giảm giá trị của con trỏ**: giá trị con trỏ sẽ thay đổi theo kích thước của kiểu dữ liệu mà nó trỏ tới.
+
+Ví dụ: 
+```cpp
+char:   0x00 -> 0x01 -> 0x02 -> ...
+int:    0x00 -> 0x04 -> 0x08 -> ...
+double: 0x00 -> 0x08 -> 0x10 -> ...
+```
+
+➡️ **Truy cập giá trị**: Khi truy cập giá trị thông qua con trỏ (bằng toán tử dereference ``` * ```), kiểu dữ liệu của con trỏ quyết định kích thước và cách thức đọc dữ liệu từ bộ nhớ.
+
+Ví dụ: 
+```cpp
+char:   truy cập 1 byte tại địa chỉ pointer trỏ đến.
+int:    truy cập 4 byte tại địa chỉ pointer trỏ đến.
+double: truy cập 8 byte tại địa chỉ pointer trỏ đến.
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 Ứng dụng con trỏ</b></summary>
+<p>
+
+**Nhập số từ bàn phím**
+```cpp
+#include <stdio.h>
+
+void input(int *a, int *b){
+    printf("Nhap so 1: "); scanf("%d", a);
+    printf("Nhap so 2: "); scanf("%d", b);
+}
+
+int main(int argc, char const *argv[])
+{
+    int a,b;
+    input(&a,&b);
+    return 0;
+}
+```
+
+<br>
+
+**Hoán đổi 2 số**
+```cpp
+#include <stdio.h>
+
+void swap1(int a, int b){
+    int temp = a;
+    a = b;
+    b = temp;
+}
+// Khi gọi hàm sẽ khởi tạo 2 địa chỉ, gs là 0xc1 và 0xf2 để lưu giá trị a,b
+// Thực hiện copy giá trị của biến a,b trong hàm main và đưa vào 2 địa chỉ trên
+// a,b ở đây là 2 tham số truyền vào của hàm nên sẽ lưu ở Stack và bị thu hồi vùng nhớ khi kết thúc việc gọi hàm
+// Vì vậy, gọi hàm này sẽ không hoán đổi 2 số
+
+void swap2(int *a, int *b){
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+// Khi gọi hàm sẽ truy cập đến 2 địa chỉ 0x01 và 0xb4 để lấy giá trị và thực hiện hoán đổi
+
+int main(int argc, char const *argv[])
+{
+    int a = 10;	// địa chỉ 0x01
+    int b = 20; // địa chỉ 0xb4
+
+    // swap1(a,b);
+    swap2(&a,&b);
+    printf("value a is: %d\n", a);
+    printf("value b is: %d\n", b);
+    return 0;
+}
+```
+
+</p>
+</details>
+
+<details><summary><b>5.3. Các kiểu con trỏ</b></summary>
+<p>
+
+<details><summary><b>📚 Con trỏ Void (Void Pointer)</b></summary>
+<p>
+	
+- Thường dùng để **trỏ tới bất kỳ địa chỉ** với bất kỳ kiểu dữ liệu của giá trị tại địa chỉ đó.
+- Muốn in ra giá trị thì phải sử dụng ép kiểu để đưa con trỏ void về đến kiểu dữ liệu của giá trị đó.
+- Cú pháp: ``` void *ptr_void; ```
+
+🖥️
+```cpp 
+#include <stdio.h>
+
+void sum(int a, int b){
+    printf("%d + %d = %d\n", a, b, a+b);
+}
+
+int main(int argc, char const *argv[])
+{
+    void *ptr_void;
+    ptr_void = (void*)sum;
+    ((void (*)(int,int))ptr_void)(9,3);
+
+    int var_int = 10;
+    ptr_void = &var_int;
+    printf("Dia chi: %p, int: %d\n", ptr_void, *(int*)ptr_void);
+
+    double var_double = 3.14;
+    ptr_void = &var_double;
+    printf("Dia chi: %p, double: %.3f\n", ptr_void, *(double*)ptr_void);
+
+    char var_char = 'A';
+    ptr_void = &var_char;
+    printf("Dia chi: %p, char: %c\n", ptr_void, *(char*)ptr_void);
+
+    char arr[] = "hello";
+    ptr_void = arr;
+
+    // printf("chuoi: %c\n", *(char*)(ptr_void+1));
+    
+    printf("Chuoi: ");
+    for (int i=0; i<(sizeof(arr)/sizeof(arr[0])); i++){
+        printf("%c\n", *(char*)(ptr_void+i));
+    }
+    printf("\n");
+
+    void *ptr[] = {&var_int, &var_double, &var_char, sum, arr};
+    printf("ptr[0] = %d\n", *(int*)ptr[0]);
+    printf("ptr[1] = %f\n", *(double*)ptr[1]);
+    printf("ptr[2] = %c\n", *(char*)ptr[2]);
+
+    ((void (*)(int,int))ptr[3])(9,3);
+
+    for (int i=0; i<(sizeof(arr)/sizeof(arr[0])); i++){
+        printf("%c", *(char*)(ptr[4]+i));
+    }
+    return 0;
+}
+
+```
+```cpp
+9 + 3 = 12
+Dia chi: 00000075E7BFF70C, int: 10
+Dia chi: 00000075E7BFF700, double: 3.140   
+Dia chi: 00000075E7BFF6FF, char: A
+Chuoi:
+h
+e
+l
+l
+o
+
+ptr[0] = 10
+ptr[1] = 3.140000
+ptr[2] = A
+9 + 3 = 12
+hello
+```
+</p>
+</details>
+
+<details><summary><b>📚 Con trỏ hàm (Function Pointer)</b></summary>
+<p>
+	
+- Con trỏ hàm là một biến mà **giữ địa chỉ của hàm**.
+- Cần chỉ định kiểu dữ liệu của hàm mà con trỏ đó sẽ tham chiếu đến khi khai báo, bao gồm kiểu trả về và các tham số của hàm. Sau đó, ta có thể gán con trỏ hàm này cho một hàm cụ thể.
+- Khi gọi con trỏ hàm, chương trình sẽ thực thi hàm mà con trỏ đang tham chiếu đến.
+- Cú pháp: ``` <return_type> (* func_pointer)(input_1_data type, input_2_data type,....); ```
+
+🖥️
+```cpp
+#include <stdio.h>
+// Hàm mẫu 1
+void greetEnglish(){
+    printf("Hello!\n");
+}
+
+// Hàm mẫu 2
+void greetFrench(){
+    printf("Bonjour!\n");
+}
+
+int main(){
+    // Khai báo con trỏ hàm
+    void (*ptrToGreet)();
+    
+    // Gán địa chỉ của hàm greetEnglish cho con trỏ hàm
+    ptrToGreet = greetEnglish;
+    
+    // Gọi hàm thông qua con trỏ hàm
+    ptrToGreet();  // In ra: Hello!
+
+    // Gán địa chỉ của hàm greetFrench cho con trỏ hàm
+    ptrToGreet = greetFrench;
+    
+    // Gọi hàm thông qua con trỏ hàm
+    (*ptrToGreet)();  // In ra: Bonjour!    
+    
+    return 0;
+}
+```
+```cpp
+Hello!
+Bonjour!
+```
+
+<br>
+
+🖥️
+```cpp
+#include <stdio.h>
+
+void tong(int a, int b){
+    printf("%d + %d = %d\n", a, b, a+b);
+}
+
+void hieu(int a, int b){
+    printf("%d - %d = %d\n", a, b, a-b);
+}
+
+void tich(int a, int b){
+    printf("%d x %d = %d\n", a, b, a*b);
+}
+
+void thuong(int a, int b){
+    printf("%d / %d = %0.3f\n", a, b, a/(double)b);
+}
+
+int main(int argc, char const *argv[])
+{
+    int a = 10, b = 20;
+
+    // cách 1
+    void (*ptr)(int,int);
+    ptr = tong;
+    ptr(a,b);
+
+    ptr = hieu;
+    ptr(a,b);
+
+    ptr = tich;
+    ptr(a,b);
+
+    ptr = thuong;
+    ptr(a,b);
+    printf("\n");
+
+
+    // cách 2
+    tinhtoan(tong,a,b);
+    tinhtoan(hieu,a,b);
+    tinhtoan(tich,a,b);
+    tinhtoan(thuong,a,b);
+    printf("\n");
+
+
+    // cách 3
+    void (*calculate[])(int,int) = {tong, hieu, tich, thuong};
+    calculate[0](a,b);
+    calculate[1](a,b);
+    calculate[2](a,b);
+    calculate[3](a,b);
+    return 0;
+}
+
+void tinhtoan(void (*pheptoan)(int,int), int a, int b){
+    pheptoan(a,b);
+}
+```
+```cpp
+10 + 20 = 30
+10 - 20 = -10
+10 x 20 = 200
+10 / 20 = 0.500
+
+10 + 20 = 30
+10 - 20 = -10
+10 x 20 = 200
+10 / 20 = 0.500
+
+10 + 20 = 30
+10 - 20 = -10
+10 x 20 = 200
+10 / 20 = 0.500
+```
+</p>
+</details>
+
+<details><summary><b>📚 Con trỏ hằng (Pointer to constant)</b></summary>
+<p
+
+- Con trỏ hằng là một cách định nghĩa một con trỏ **chỉ có thể đọc giá trị tại địa chỉ mà nó trỏ đến (Read Only)** nhưng không thể thay đổi được giá trị đó.
+- Đối với biến là hằng số thì phải luôn dùng con trỏ hằng khi trỏ đến.
+- Cú pháp: 
+```cpp
+<data_type> const *ptr_const;
+const <data_type> *ptr_const;
+```
+
+🖥️
+```cpp
+#include <stdio.h>
+
+int value1 = 10;
+int value2 = 3;
+const int *ptr_const = &value1;
+
+int main(int argc, char const *argv[])
+{
+    printf("%p\n", ptr_const);
+    printf("%d\n", *ptr_const);
+
+    value1 = 5;
+    printf("%p\n", ptr_const);
+    printf("%d\n", *ptr_const);
+
+    //*ptr_const = 5;    // wrong
+    ptr_const = &value2; // right
+    printf("%p\n", ptr_const);
+    printf("%d\n", *ptr_const);
+    return 0;
+}
+```
+📝 Kết quả sau khi chạy sẽ gặp lỗi: ```assignment of read-only location '*ptr_const'```
+
+<br>
+
+🖥️
+```cpp
+#include <stdio.h>
+
+void test(const char *str){
+	str[0] = 'A';
+}
+
+int main(int argc, char const *argv[])
+{
+    char arr[] = "Hello World";
+    test(arr);
+    printf("%s\n", arr);
+    return 0;
+}
+```
+
+📝 Trong hàm test, nếu khai báo ``` char* ``` thì chuỗi truyền vào hoàn toàn có thể bị thay đổi. Để ngăn việc thay đổi xảy ra, nghĩa là nhu cầu chỉ đọc chuỗi truyền vào thì phải khai báo ``` const char* ```.
+
+</p>
+</details>
+
+<details><summary><b>📚 Hằng con trỏ (Constant to Pointer)</b></summary>
+<p
+    
+- Hằng con trỏ là một con trỏ mà **trỏ đến 1 địa chỉ cố định**, nghĩa là khi con trỏ này được khởi tạo thì nó sẽ không thể trỏ tới địa chỉ khác.
+- Cú pháp: ``` int *const const_ptr = &value; ```
+
+💻
+```cpp
+#include <stdio.h>
+
+int value1 = 10;
+int value2 = 20;
+int *const const_ptr = &value1;
+
+int main(int argc, char const *argv[]){
+    printf("%p\n", const_ptr);
+    printf("%d\n", *const_ptr);
+
+    *const_ptr = 5;
+    printf("%p\n", const_ptr);
+    printf("%d\n", *const_ptr);
+    
+    // const_ptr = &value2; // wrong
+    // printf("%p\n", const_ptr);
+    return 0;
+}
+
+```
+📝 Kết quả sau khi chạy sẽ gặp lỗi: ```assignment of read-only variable 'const_ptr'```
+
+<br>
+
+**Ứng dụng**: thiết kế thư viện, ví dụ một GPIO sẽ có nhiều thanh ghi bên trong như GPIO_CRL, GPIO_CRH, GPIO_ODR, v.v. Mỗi thanh ghi sẽ được cấp cho một địa chỉ cố định.
+
+</p>
+</details>
+
+<details><summary><b>📚 Con trỏ NULL (Null Pointer)</b></summary>
+<p
+    
+- Khi khai báo con trỏ mà chưa sử dụng ngay hoặc sử dụng xong thì phải gán NULL.
+
+💻
+```cpp
+int *ptr_null = NULL;
+//  ptr_null = 0x00: địa chỉ khởi tạo
+// *ptr_null = 0   : giá trị tại địa chỉ khởi tạo
+```
+</p>
+</details>
+
+<details><summary><b>📚 Pointer to pointer</b></summary>
+<p
+    
+- Là một kiểu dữ liệu trong ngôn ngữ lập trình cho phép bạn lưu trữ địa chỉ của một con trỏ.
+- Con trỏ đến con trỏ cung cấp một cấp bậc trỏ mới, cho phép bạn thay đổi giá trị của con trỏ gốc.
+- Cấp bậc này có thể hữu ích trong nhiều tình huống, đặc biệt là khi bạn làm việc với các hàm cần thay đổi giá trị của con trỏ.
+
+💻
+```cpp
+int a = 10;		// a là 1 biến, giả sử có địa chỉ 0x01
+int *ptr1  = &a;	// ptr1 là con trỏ cấp 1, trỏ đến địa chỉ biến a (0x01), dịa chỉ ptr1 là 0xf4
+int **ptr2 = &ptr1;	// ptr2 là con trỏ cấp 2, trỏ đến địa chỉ ptr1 (0xf4)
+```
+
+```cpp
+ptr1 = &a = 0x01;
+*ptr1 = a = 10;
+
+ptr2 = &ptr1 = 0xf4;
+*ptr2 = *(&ptr1) = *(0xf4) = 0x01;
+**ptr2 = *(0x01) = 10;
+```
+
+</p>
+</details>
+
+</p>
+</details>
+
+</p>
+</details>
+
+<details><summary><b>6. Các biến đặc biệt</b></summary>
+<p>
+
+<details><summary><b>📚 Extern</b></summary>
+<p>
+
+- **extern** có thể sử dụng cho một đối tượng (biến hoặc hàm), nếu là **biến** thì phải được **khai báo toàn cục** với mục đích là thông báo rằng biến hoặc hàm này đã được định nghĩa ở một nơi khác trong chương trình hoặc trong 1 file nguồn khác.
+- **extern** cho phép các file nguồn khác nhau trong cùng một chương trình chia sẽ và sử dụng các biến và hàm mà không cần định nghĩa lại.
+- **extern** chỉ cho phép khai báo chứ không định nghĩa.
+- Cú pháp: ``` extern <data_type> <name_variable>; ```
+
+💻 
+
+File **main.c**
+```cpp
+#include <stdio.h>
+
+extern int a;
+extern int b;
+
+extern void display1();
+extern void display2();
+
+int main(int argc, char const *argv[])
+{
+    a = 20;
+    printf("a = %d\n",a);
+
+    b = 50;
+    printf("b = %d\n",b);
+
+    display1();
+    display2();
+    return 0;
+}
+```
+
+</p>
+</details>
+
+**Ứng dụng**:
+
+- Thiết kế thư viện.
+- Chia sẻ biến và hàm giữa các file nguồn hoặc giữa các module và thư viện.
+- Sử dụng một hàm trước khi nó được định nghĩa trong mã nguồn.
+- Chia sẻ hằng số giữa các file nguồn.
+
+💻
+
+File **File1.h**
+```cpp
+#ifndef _FILE1_H
+#define _FILE1_H
+
+extern int a;
+
+void display1();
+
+#endif
+```
+
+File **File1.c**
+```cpp
+#include <stdio.h>
+#include "File1.h"
+
+int a = 10;
+
+void display1(){
+    printf("This is file1.c\n");
+}
+```
+
+File **File2.h**
+```cpp
+#ifndef _FILE2_H
+#define _FILE2_H
+
+extern int b;
+
+void display2();
+
+#endif
+File **File2.c**
+#include <stdio.h>
+#include "File2.h"
+
+int b = 10;
+
+void display2(){
+    printf("This is file2.c\n");
+}
+```
+
+File **main.c**
+```cpp
+#include <stdio.h>
+#include "File1.h"
+#include "File2.h"
+
+extern void display1();
+extern void display2();
+
+int main(int argc, char const *argv[])
+{
+    a = 20;
+    printf("a = %d\n",a);
+
+    b = 50;
+    printf("b = %d\n",b);
+
+    display1();
+    display2();
+    return 0;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+</p>
+</details>
+
+<details><summary><b>📚 Static</b></summary>
+<p>
+
+**Cú pháp**:
+
+```cpp
+static <data_type> <name_variable>;
+static <data_type> <name_function>;
+```
+
+</p>
+</details>
+
+<details><summary><b>📚📚 Static local</b></summary>
+<p>
+	
+Khi 1 biến cục bộ được khai báo với từ khóa static:
+
+- Biến chỉ được khởi tạo một lần, nghĩa là địa chỉ của nó sẽ tồn tại xuyên suốt chương trình.
+- Giữ phạm vi của biến chỉ trong hàm đó.
+- Giữ giá trị của biến qua các lần gọi hàm.
+
+Biến cục bộ static chỉ có thể được gọi trong nội bộ hàm khởi tạo ra nó. Mỗi lần hàm được gọi, giá trị của biến chính bằng giá trị tại lần gần nhất hàm được gọi.
+
+💻
+```cpp
+#include <stdio.h>
+
+void count(){
+    static int a = 5;
+    a++;
+    printf("a = %d\n",a);
+}
+
+int main(int argc, char const *argv[])
+{
+    count();
+    count();
+    count();
+    return 0;
+}
+```
+
+Kết quả in ra:
+```cpp
+a = 6
+a = 7
+a = 8
+```
+
+📝 Nếu không có từ khóa static, kết quả 3 lần gọi hàm đều giống nhau vì biến ``` a ``` biến cục bộ, sẽ được lưu trong Stack và địa chỉ sẽ bị thu hồi sau khi hàm thực thi xong. 
+
+📝 Khi thêm ``` static ```, ở lần gọi hàm đầu tiên, biến ``` a ``` sẽ được cấp phát địa chỉ, giả sử 0x01 và địa chỉ tồn tại cho đến hết chương trình.
+
+📝 Khi gọi hàm từ lần 2 trở đi, nó sẽ không thực thi câu lệnh ``` static int a = 5 ``` vì địa chỉ biến a đã được cấp phát trước đó mà sẽ bắt đầu thực thi từ câu lệnh tiếp theo (``` a++ ```).
+
+**Có thể thay đổi giá trị của biến cục bộ từ bên ngoài thông qua một con trỏ.** 
+
+💻
+```cpp
+#include <stdio.h>
+
+int *ptr = NULL;
+
+void count(){
+    static int a = 5;
+    ptr = &a;
+    a++;
+    printf("a = %d\n",a);
+}
+
+int main(int argc, char const *argv[]){
+    count();     // in ra "a = 6"
+    count();     // in ra "a = 7"
+    count();     // in ra "a = 8"
+
+    *ptr = 99;  // truy cập địa chỉ 0x01 và thay đổi giá trị biến a thành 99
+    count();     // in ra "a = 100"
+    ptr = NULL;
+    return 0;
+}
+```
+
+</p>
+</details>
+
+<details><summary><b>📚📚 Static global</b></summary>
+<p>
+
+Khi **'static'** được sử dụng với các biến toàn cục, nó sẽ hạn chế phạm vi của biến chỉ có thể gọi trong file nguồn hiện tại.
+
+💻
+
+File **file1.h**
+```cpp
+#ifndef _FILE1_H
+#define _FILE1_H
+
+static int a;
+
+static void display();
+
+void test();
+
+#endif
+```
+
+File **file1.c**
+```cpp
+#include <stdio.h>
+#include "file1.h"
+
+static int a = 10;
+
+static void display(){
+    printf("This is file1.c\n");
+}
+
+void test(){
+    printf("Hello world\n");
+}
+```
+
+File **main.c**
+```cpp
+#include <stdio.h>
+
+extern int a;
+extern void display();
+extern void test();
+
+int main(int argc, char const *argv[])
+{
+    printf("a = %d\n",a);
+    display();
+    test();
+    return 0;
+}
+
+```
+
+📝 Kết quả sau khi chạy: 
+```cpp
+undefined reference to `display'
+undefined reference to `a'
+```
+
+📝 Dễ thấy file main.c khi chạy sẽ gặp lỗi do cố gắng sử dụng extern để gọi 1 biến toàn cục hoặc hàm đã được khai báo với static trong 1 file nguồn khác.
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚📚 Ứng dụng</b></summary>
+<p>
+
+- Thiết kế thư viện.
+- Quản lý tài nguyên bộ nhớ tốt hơn và tránh xung đột tên biến giữa các module khác nhau.
+- Khi khai báo biến toàn cục với static trong một file C, biến chỉ có thể truy cập trong file đó, ngăn ngừa các vấn đề chia sẻ biến không mong muốn giữa các file.
+- Dùng cho biến cục bộ trong một hàm để giữ lại giá trị của biến giữa các lần gọi hàm (persistence).
+
+<br>
+
+</p>
+</details>
+
+</p>
+</details>
+
+<details><summary><b>📚 Volatile</b></summary>
+<p>
+
+- **volatile** báo cho compiler biết rằng biến này **có thể sẽ được thay đổi ở bởi yếu tố bên ngoài chương trình** như hardward (ngắt, nhấn button,…) hoặc một luồng khác.
+- **volatile** ngăn chặn compiler tối ưu hóa hoặc xóa bỏ các thao tác trên biến đó, giữ cho các thao tác trên biến được thực hiện như đã được định nghĩa.
+- Cú pháp: ``` volatile <data_type> <name_variable>; ```
+- Biến Volatile rất cần thiết trong lập trình nhúng, vì khi đó có các tác vụ như ngắt ảnh hưởng tới giá trị của biến. Trong lập trình C cơ bản thì rất ít gặp.
+
+💻
+```cpp
+#include "stm32f4xx.h"                  // Device header
+
+uint8_t *addr = (uint8_t*)0x20000000;
+volatile uint8_t var = 0;
+
+int main(){
+	while (1){
+		var = *addr;
+		if (var != 0){
+			break;
+		}
+	}
+}
+```
+📝 Khi khai báo biến ``` var ``` mà không có từ khóa ``` volatile ```, nếu giá trị của biến không thay đổi hoặc thay đổi ngay lần đầu chạy debug (thông qua thay đổi giá trị tại địa chỉ 0x20000000) thì compiler sẽ tối ưu hóa biến này khi nhận thấy biến này không có sự thay đổi giá trị ở những lần chạy kế tiếp.
+
+📝 Khi khai báo biến ``` var ``` có từ khóa ``` volatile ```, trong quá trình chạy, nếu giá trị biến thay đổi đột ngột thì chương trình vẫn cập nhật vì compiler chưa tối ưu hóa biến này.
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 Register</b></summary>
+<p>
+
+📝 Trong kiến trúc của vi xử lý thì ALU (Arithmetic Logic Unit) đóng vai trò xử lý các tính toán số học và nó chỉ làm việc với các dự liệu được lưu trữ trong thanh ghi (Register).
+
+📝 Khi khai báo các biến trong chương trình thì những biến này được lưu ở RAM. Nếu có thêm phép tính (``` ++ ``` hoặc ``` -- ```) thì nó chỉ lưu thông tin của phép tính này chứ chưa thực hiện.
+
+![image](https://github.com/user-attachments/assets/a57d1e72-86f1-405d-853c-660e459a37f0)
+
+📝 Giai đoạn 1: Nạp giá trị từ RAM vào Register
+
+📝 Giai đoạn 2: Đưa dữ liệu từ Register sang ALU để bắt đầu xử lý.
+
+📝 Giai đoạn 3: Khi ALU xử lý xong thì trả ngược dữ liệu về Register.
+
+📝 Giai đoạn 4: Trả giá trị vừa xử lý từ Register về lại vùng nhớ RAM.
+
+- **register** được sử dụng để định nghĩa các biến cục bộ mà nên được lưu giữ trong một thanh ghi thay vì RAM.
+- **register** làm tăng hiệu năng (performance) của chương trình.
+- Cú pháp: ``` register <data_type> <name_variable>; ```
+
+💻
+```cpp
+#include <stdio.h>
+#include <time.h>
+
+int main() {
+    // Lưu thời điểm bắt đầu
+    clock_t start_time = clock();
+    int i;
+    //register int i;
+
+    // Đoạn mã của chương trình
+    for (i = 0; i < 2000000; ++i) {
+        // Thực hiện một số công việc bất kỳ
+    }
+
+    // Lưu thời điểm kết thúc
+    clock_t end_time = clock();
+
+    // Tính thời gian chạy bằng miligiây
+    double time_taken = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
+
+    printf("Thoi gian chay cua chuong trinh: %f giay\n", time_taken);
+    return 0;
+}
+```
+
+📝 Khi chưa register ```Thoi gian chay cua chuong trinh: 0.005 giay```
+
+📝 Khi có register ```Thoi gian chay cua chuong trinh: 0.001 giay```
+
+</p>
+</details>
+
+</p>
+</details>
+
+<details><summary><b>7. goto - thư viện setjmp</b></summary>
+<p>
+
+<details><summary><b>7.1. goto trong C</b></summary>
+<p>
+
+<details><summary><b>📚 Khái niệm</b></summary>
+<p>
+
+- Từ khóa **"goto"** cho phép chương trình nhảy đến một label đã được đặt trước đó **cùng một hàm**.
+- "goto" cung cấp khả năng kiểm soát luồng hoạt động của mã nguồn, nhưng việc sử dụng goto thường được xem là không tốt vì nó có thể làm cho mã nguồn trở nên khó đọc và khó bảo trì.
+
+💻
+```cpp
+int main(){
+    int i=0;
+    
+    // đặt label start
+    start:
+        if (i >= 5){
+            goto end;       // chuyển control đến lable "end"
+        }
+        printf("%d\n",i);
+        i++;
+        goto start;
+
+    // đặt label end
+    end:
+        printf("The end\n");// chuyển control đến label "start"
+    return 0;
+}
+```
+📝 Trong ví dụ này, goto được sử dụng để tạo một vòng lặp đơn giản. Khi i đạt đến giá trị 5, control sẽ chuyển đến nhãn "end" và kết thúc chương trình.
+
+</p>
+</details>
+
+<details><summary><b>📚 Ứng dụng</b></summary>
+<p>
+
+**Thoát khỏi vòng lặp nhiều cấp độ**
+
+Trong một số trường hợp, việc thoát khỏi nhiều cấp độ vòng lặp có thể trở nên phức tạp nếu sử dụng cấu trúc kiểm soát vòng lặp thông thường. Trong tình huống như vậy, goto có thể được sử dụng để dễ dàng thoát khỏi nhiều cấp độ vòng lặp.
+
+💻
+```cpp
+int main(int argc, char const *argv[]){
+    int count=0;
+
+    for (int i=0; i<10; i++){
+        for (int j=0; j<10; j++){
+            if (i==5 && j==5) goto exit_loops;
+            else{
+                printf("i=%d  j=%d\n", i, j);
+            }
+        }
+    }
+    
+    exit_loops:
+    return 0;
+}
+```
+
+**Xử lý lỗi và giải phóng bộ nhớ**
+
+Trong trường hợp xử lý lỗi, có thể sử dụng goto để dễ dàng giải phóng bộ nhớ đã được cấp phát trước khi thoát khỏi hàm.
+
+💻
+```cpp
+void process_data() {
+    int *data = malloc(sizeof(int) * 100);
+    if (data == NULL) {
+        goto cleanup;
+    }
+
+    // Xử lý dữ liệu ở đây
+
+    cleanup:
+    free(data);
+}
+```
+
+**Thực hiện Finite State Machine**
+Trong một số trường hợp, đặc biệt là khi triển khai Finite State Machines, goto có thể được sử dụng để chuyển đến các trạng thái khác nhau một cách dễ dàng.
+
+💻
+```cpp
+switch (current_state) {
+    case STATE_A:
+        // Xử lý State A
+        if (condition) {
+            goto STATE_B;
+        }
+        break;
+
+    case STATE_B:
+        // Xử lý State B
+        break;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+</p>
+</details>
+
+<details><summary><b>7.2. Thư viện setjmp</b></summary>
+<p>
+
+<details><summary><b>📚 Hàm setjmp</b></summary>
+<p>
+
+- setjmp lưu trạng thái hiện tại của môi trường thực thi vào một biến kiểu jmp_buf.
+- setjmp thường được sử dụng để thiết lập một điểm quay lại (checkpoint) trong chương trình.
+- setjmp trả về giá trị 0 khi được gọi lần đầu tiên và giá trị khác 0 khi quay lại từ longjmp.
+
+```setjmp(jmp_buf buf);```
+
+</p>
+</details>
+
+<details><summary><b>📚 Hàm longjmp</b></summary>
+<p>
+
+- longjmp là hàm dùng để nhảy trở lại vị trí đã lưu bởi setjmp và tiếp tục thực thi chương trình từ đó.
+
+```cpp
+void longjmp(jmp_buf buf, int value);
+// buf  : biến 'jmp_buf' đã được lưu bởi 'setjmp'
+// value: giá trị trả về từ 'setjmp'. Nếu value=0 thì 'setjmp' trả về 1
+```
+
+💻
+```cpp
+#include <stdio.h>
+#include <setjmp.h>
+
+jmp_buf buf;
+int exception_code;
+
+double thuong(int a, int b){
+	if (!b){
+		longjmp(buf,1);
+	}
+	return a/(double)b;
+}
+
+int checkArray(int *arr, int size){
+    	if (size <= 0){
+        	longjmp(buf,2);
+	}
+    	return 1;
+}
+
+int main(int argc, char const *argv[]){
+	// khi bắt đầu thì setjmp(buf) luôn bằng 0
+
+	if ((exception_code = setjmp(buf)) == 0){
+		int array[0];
+		double ketqua = thuong(8,0);
+		printf("Ket qua: %0.3f\n", ketqua);
+		checkArray(array,0);
+	}
+	else if (exception_code == 1){
+		printf("ERROR! Mau bang 0\n");
+	}
+	else if (exception_code == 2){
+		printf("ERROR! Array bang 0\n");
+	}
+	return 0;
+}
+```
+
+</p>
+</details>
+
+<details><summary><b>📚 Xử lý ngoại lệ</b></summary>
+<p>
+
+Cả hai hàm setjmp và longjmp thường được sử dụng để thực hiện xử lý ngoại lệ trong C thông qua 3 keywords chính là: **try, catch, throw**.
+
+```cpp
+#include <stdio.h>
+#include <setjmp.h>
+
+jmp_buf buf;
+int exception_code;
+
+#define TRY if ((exception_code = setjmp(buf)) == 0)
+#define CATCH(x) else if (exception_code == x)
+#define THROW(x) longjmp(buf,x)
+```
+
+**Ví dụ**
+```cpp
+#include <stdio.h>
+#include <setjmp.h>
+
+jmp_buf buf;
+int exception_code;
+
+#define TRY if ((exception_code = setjmp(buf)) == 0)
+#define CATCH(x) else if (exception_code == x)
+#define THROW(x) longjmp(buf,x)
+
+double thuong(int a, int b){
+    if (b == 0){
+        THROW(1);
+    }
+    return a/(double)b;
+}
+
+int checkArray(int *arr, int size){
+    if (size <= 0){
+        THROW(2);
+    }
+    return 1;
+}
+
+int main(int argc, char const *argv[])
+{
+    
+    TRY{
+        int array[0];
+        double ketqua = thuong(8,1);
+        printf("Ket qua = %0.3f\n",ketqua);
+        checkArray(array,0);
+    }
+    CATCH(1){
+        printf("Error\n");
+    }
+    CATCH(2){
+        printf("Error! Array = 0\n");
+    }
+    return 0;
+}
+```
+
+<br>
+
+</p>
+</details>
 
 </p>
 </details>
