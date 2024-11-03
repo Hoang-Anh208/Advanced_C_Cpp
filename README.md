@@ -1658,9 +1658,6 @@ int main(int argc, char const *argv[])
 </p>
 </details>
 
-</p>
-</details>
-
 <details><summary><b>📚 Static</b></summary>
 <p>
 
