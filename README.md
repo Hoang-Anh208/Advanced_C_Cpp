@@ -1910,6 +1910,9 @@ int main() {
 </p>
 </details>
 
+</p>
+</details>
+
 <details><summary><b>7. goto - thư viện setjmp</b></summary>
 <p>
 
@@ -2152,9 +2155,6 @@ int main(int argc, char const *argv[])
 ```
 
 <br>
-
-</p>
-</details>
 
 </p>
 </details>
