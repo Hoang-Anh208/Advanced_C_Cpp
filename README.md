@@ -2950,6 +2950,8 @@ int main(int argc, char const *argv[])
 </p>
 </details>
 
+<br>
+
 <details><summary><b>10. Memory layout (Phân vùng nhớ)</b></summary>
 <p>
 
@@ -3447,12 +3449,123 @@ void function() {
 
 <br>
 
+<details><summary><b>11. JSON</b></summary>
+<p>
+
+<details><summary><b>11.1. Khái niệm</b></summary>
+<p>
+
+- JSON là viết tắt của "JavaScript Object Notation" (Ghi chú về Đối tượng JavaScript) là một định dạng dữ liệu phổ biến trong lập trình và giao tiếp giữa các máy chủ và trình duyệt web, cũng như giữa các hệ thống khác nhau.
+- JSON được thiết kế để dễ đọc và dễ viết cho con người, cũng như dễ dàng để phân tích và tạo ra cho máy tính. Nó sử dụng một cú pháp nhẹ dựa trên cặp **key - value**, tương tự như các đối tượng và mảng trong JavaScript. Mỗi đối tượng JSON bao gồm một tập hợp các cặp "key" và "value", trong khi mỗi mảng JSON là một tập hợp các giá trị.
+
 </p>
 </details>
 
+<details><summary><b>11.2.  Các kiểu dữ liệu JSON</b></summary>
+<p>
+
+**Object**:
+
+- Một tập hợp các cặp key – value, được đặt trong dấu ngoặc nhọn {}.
+- Mỗi **key** phải là một **chuỗi** và **value** có thể là **bất kỳ kiểu dữ liệu** nào như chuỗi, số, boolean, mảng, hoặc một đối tượng khác.
+- Mỗi cặp key - value được phân tách bằng dấu hai chấm (:).
+- Các cặp key - value trong object được phân tách bằng dấu phẩy (,).
+
+```cpp
+{ 
+  "name": "John Doe",
+  "age": 30,
+  "city": "New York",
+  "isStudent": false,
+  "grades": [85, 90, 78]
+}
+```
+
 <br>
 
+**Array**:
 
+- Là một danh sách các giá trị, được bao quanh bởi dấu ngoặc vuông []. Các giá trị trong mảng có thể thuộc bất kỳ kiểu dữ liệu JSON nào, kể cả object hoặc mảng khác.
+
+```cpp
+[
+  {
+    "name": "John Doe",
+    "age": 30,
+    "city": "New York",
+    "occupation": "Software Engineer",
+    "isStudent": false
+  },
+  {
+    "name": "Jane Smith",
+    "age": null,
+    "city": "Los Angeles",
+    "contact": {
+      "email": "jane.smith@example.com",
+      "phone": "555-1234"
+    }
+  },
+  {
+    "name": "Bob Johnson",
+    "age": 35,
+    "city": "Chicago"
+  }
+]
+```
+
+<br>
+
+**Number**:
+
+- Có thể là số nguyên hoặc số thực.
+
+```cpp
+{
+  "integer": 42,
+  "float": 3.14
+}
+```
+
+<br>
+
+**String**:
+
+```cpp
+{
+  "greeting1": "Hello, world 1!",
+  "greeting2": "Hello, world 2!"
+}
+```
+
+<br>
+
+**Boolean**:
+
+- Chỉ có hai giá trị là true hoặc false
+
+```cpp
+{
+  "isAdmin": true,
+  "isLoggedIn": false
+}
+```
+
+<br>
+
+**null**:
+
+- Đại diện cho một giá trị rỗng hoặc không có giá trị.
+
+```cpp
+{
+  "middleName": null
+}
+```
+
+
+
+</p>
+</details>
 
 </p>
 </details>
