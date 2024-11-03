@@ -197,6 +197,8 @@ File **main.o**
 </p>
 </details>
 
+<<br>
+
 <details><summary><b> 2. Macro</b></summary>
 <p>
 
@@ -643,6 +645,8 @@ int main(int argc, char const *argv[])
 </p>
 </details>
 
+<br>
+
 <details><summary><b>3. Thư viện STDARG</b></summary>
 <p>
 
@@ -986,6 +990,8 @@ int main() {
 </p>
 </details>
 
+<br>
+
 <details><summary><b>4. Thư viện assert</b></summary>
 <p>
 
@@ -1055,6 +1061,8 @@ void checkTypeSizes() {
 
 </p>
 </details>
+
+<br>
 
 <details><summary><b>5. Pointer</b></summary>
 <p>
@@ -1536,6 +1544,8 @@ ptr2 = &ptr1 = 0xf4;
 </p>
 </details>
 
+<br>
+
 <details><summary><b>6. Các biến đặc biệt</b></summary>
 <p>
 
@@ -1913,6 +1923,8 @@ int main() {
 </p>
 </details>
 
+<br>
+
 <details><summary><b>7. goto - thư viện setjmp</b></summary>
 <p>
 
@@ -2109,7 +2121,7 @@ int exception_code;
 #define THROW(x) longjmp(buf,x)
 ```
 
-**Ví dụ**
+💻**Ví dụ**
 ```cpp
 #include <stdio.h>
 #include <setjmp.h>
@@ -2165,10 +2177,70 @@ int main(int argc, char const *argv[])
 </p>
 </details>
 
+<br>
+
+<details><summary><b>8. Bitmask</b></summary>
+<p>
+
+<details><summary><b>8.1. Khái niệm</b></summary>
+<p>
+
+- Bitmask, hay còn gọi là mặt nạ bit, là một kỹ thuật phổ biến trong lập trình được sử dụng để thao tác trên các bit riêng lẻ trong một giá trị nhị phân.
+- Bitmask cho phép bạn kiểm tra, đặt, hoặc xóa các bit cụ thể trong một số mà không ảnh hưởng đến các bit khác. Bitmask được dùng nhiều trong các ứng dụng yêu cầu xử lý dữ liệu cấp thấp hoặc tối ưu hóa bộ nhớ..
+- Bitmask thường được sử dụng để tối ưu hóa bộ nhớ, thực hiện các phép toán logic trên một cụm bit, và quản lý các trạng thái, quyền truy cập, hoặc các thuộc tính khác của một đối tượng.
+
+<br>
+
 </p>
 </details>
 
+<details><summary><b>8.2. Các toán tử bitwise</b></summary>
+<p>
 
+Bitmask là một số nhị phân được sử dụng kết hợp với các phép toán bit như **AND (&), OR (|), XOR (^), NOT (~), dịch phải (>>) và dịch trái (<<)** để thực hiện các thao tác trên bit.
+
+![image](https://github.com/user-attachments/assets/e9b5fc2e-0d94-4708-bbe1-740f7a21d417)
+
+![image](https://github.com/user-attachments/assets/c8549e26-9a0b-4835-a886-d11a6bed9fb1)
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>8.3. Các phép toán phổ biến với bitwise</b></summary>
+<p>
+
+<details><summary><b>📚 Kiểm tra bit (bit checking)</b></summary>
+<p>
+
+- Sử dụng phép AND để kiểm tra xem một bit cụ thể có đang được bật hay không.
+
+💻 Ví dụ:
+```cpp
+int num = 0b1010; // Số nhị phân: 1010
+int mask = 0b0010; // Mặt nạ để kiểm tra bit thứ 2
+
+if (num & mask) {
+    printf("Bit thứ 2 đang bật\n");
+} else {
+    printf("Bit thứ 2 đang tắt\n");
+}
+```
+
+</p>
+</details>
+
+</p>
+</details>
+
+</p>
+</details>
+
+<br>
+
+</p>
+</details>
 
 # C++
 <details><summary>Nhấp vào để xem chi tiết</summary>
