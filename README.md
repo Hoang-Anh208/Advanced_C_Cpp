@@ -1,11 +1,13 @@
-# C programming
+# C
 <details><summary>Nhấp vào để xem chi tiết</summary>
 <p>
 
 </p>
 </details>
 
-# C++ programming
+<br>
+
+# C++
 <details><summary>Nhấp vào để xem chi tiết</summary>
 <p>
 
