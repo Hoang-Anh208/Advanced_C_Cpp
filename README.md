@@ -979,7 +979,6 @@ int main() {
     return 0;
 }
 ```
-<br>
 
 </p>
 </details>
