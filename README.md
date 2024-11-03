@@ -648,6 +648,348 @@ int main(int argc, char const *argv[])
 </p>
 </details>
 
+<details><summary><b>3. Thư viện STDARG</b></summary>
+<p>
+
+<details><summary><b>3.1. Giới thiệu thư viện stdarg</b></summary>
+<p>
+
+- Tương tự với macro variadic.
+- Cung cấp các hàm, macros để làm việc với các hàm có số lượng tham số đầu vào không xác định.
+- Các hàm như printf, scanf là ví dụ điển hình.
+
+</p>
+</details>
+
+<details><summary><b>3.2. Các Macro trong thư viện stdarg</b></summary>
+<p>
+
+<details><summary><b>📚 va_list</b></summary>
+<p>
+
+Là một kiểu dữ liệu để đại diện cho danh sách các đối số biến đổi.
+
+``` va_list args ```
+
+📝 Bản chất va_list là một kiểu dữ liệu đã được sử dụng ``` typedef ``` để định nghĩa lại: ``` typedef char* va_list = "int label, ..." ```
+
+📝 Khi thay thế các số trực tiếp vào ``` ... ```, ví dụ ``` 1, 5, 9 ``` thì trở thành ``` typedef char* va_list = "int count, 1, 5, 9" ```
+
+📝 Địa chỉ: 0x01(i) 0x02(n) 0x03(t) 0x04(c) 0x05(o) 0x06(u) 0x07(n) 0x08(t) 0x09(,) 0x0A(1) 0x0B(,) 0x0C(5) 0x0D(,) 0x0E(9)
+
+📝 args: có thể hiểu là một con trỏ được cấp phát động bộ nhớ để truy cập vào từng ký tự trên.
+
+</p>
+</details>
+
+<details><summary><b>📚 va_start</b></summary>
+<p>
+
+Bắt đầu một danh sách đối số biến đổi. Nó cần được gọi trước khi truy cập các đối số biến đổi đầu tiên.
+
+``` va_start(args, label) ```
+
+📝 label: chính là tên biến mà ta truyền vào, ví dụ ``` int count ``` thì label là ``` count ```, ``` int a ``` thì label là ``` a ```
+
+📝 ``` va_start ``` thực hiện so sánh chuỗi phía trên với label (so sánh từng ký tự) để tìm kiếm đâu là nơi bắt đầu của những số cần thao tác chính. 
+
+📝 Khi con trỏ ``` args ``` trỏ đến địa chỉ 0x09 (,) thì những số phía sau (1,5,9) sẽ được lưu vào mảng khác: arr[] = {'1', '5', '9'}
+
+</p>
+</details>
+
+<details><summary><b>📚 va_arg</b></summary>
+<p>
+
+Truy cập một đối số trong danh sách. Hàm này nhận một đối số của kiểu được xác định bởi tham số thứ hai.
+
+``` va_arg(args, <data_type>) ```
+
+📝 ``` va_arg ``` sẽ truy cập đến từng phần tử trong mảng và thực hiện ép kiểu về kiểu dữ liệu chúng ta muốn (int, double, char*)
+
+📝 Mỗi lần gọi ``` va_arg(args, <data_type>) ``` thì sẽ thực hiện truy cập và lấy ra 1 phần tử trong mảng.
+
+</p>
+</details>
+
+<details><summary><b>📚 va_copy</b></summary>
+<p>
+
+Sao chép một đối tượng va_list.  Điều này rất hữu ích khi bạn muốn lưu trữ trạng thái hiện tại của va_list để sử dụng sau này hoặc khi cần đọc lại các đối số biến đổi mà không làm thay đổi va_list gốc.
+
+```cpp
+va_list args;
+va_list check;
+va_copy(check,args);
+```
+
+📝 ``` va_copy ``` giúp con trỏ ``` check ``` copy địa chỉ mà con trỏ ``` args ``` đang trỏ đến 
+
+</p>
+</details>
+
+<details><summary><b>📚 va_end</b></summary>
+<p>
+
+Kết thúc việc sử dụng danh sách đối số biến đổi. Nó cần được gọi trước khi kết thúc hàm.
+
+``` va_end(args) ```
+
+📝 Thu hồi địa chỉ con trỏ ``` args ```
+
+</p>
+</details>
+
+</p>
+</details>
+
+<details><summary><b>📚 Ví dụ</b></summary>
+<p>
+
+💻 **Tổng ``` n ``` số (Cách 1: chỉ sử dụng thư viện STDARG)**
+```cpp
+#include <stdio.h>
+#include <stdarg.h>
+
+int sum(int count, ...){                                
+    va_list args; 
+    
+    va_start(args, count);
+
+    int result = 0;
+
+    for (int i=0; i<count; i++){
+        result += va_arg(args, int);
+    }
+
+    va_end(args);   
+
+    return result;
+}
+
+int main(int argc, char const *argv[])
+{
+    printf("Tong = %d\n",sum(7, 1, 2, 3, 4, 5, 10, 15));
+    return 0;
+}
+```
+
+<br>
+
+💻 **Tổng ``` n ``` số (Cách 2: thư viện STDARG kết hợp variadic với ``` số 0 ``` ở cuối để nhận biết kết thúc việc tính tổng)**
+```cpp
+#include <stdio.h>
+#include <stdarg.h>
+
+#define tong(...)   sum(__VA_ARGS__, 0)
+
+int sum(int count,...){
+    va_list args;
+
+    va_start(args, count);
+
+    int result = count;
+    int value;
+
+    while ((value = va_arg(args, int)) != 0)
+    {
+        result += value;
+    }
+
+    va_end(args);
+
+    return result;
+}
+
+int main()
+{
+    printf("Tong: %d\n", tong(3, 0, -1, 2, 33, 4, 5));
+    return 0;
+}
+```
+
+<br>
+
+💻 **Tổng ``` n ``` số (Cách 3: thư viện STDARG kết hợp variadic với ``` ký tự bất kỳ ``` ở cuối để nhận biết kết thúc việc tính tổng)**
+```cpp
+#include <stdio.h>
+#include <stdarg.h>
+
+#define tong(...)   sum(__VA_ARGS__, '\n')
+
+int sum(int count,...) {
+    va_list args;
+    va_list check;
+    
+    va_start(args, count);
+    va_copy(check, args);
+
+    int result = count;
+    
+    while (va_arg(check, char*) != (char*)'\n')
+    {
+        result += va_arg(args,int);
+    }
+
+    va_end(args);
+
+    return result;
+}
+
+int main(int argc, char const *argv[])
+{
+    printf("Tong: %d\n", tong(3, 0, -1, 2, 0, 4, 5));
+    return 0;
+}
+```
+
+<br>
+
+💻
+```cpp
+#include <stdio.h>
+#include <stdarg.h>
+
+typedef struct Data{
+    int x;
+    double y;
+} Data;
+
+void display(int count, ...) {
+    va_list args;
+
+    va_start(args, count);
+
+    for (int i = 0; i < count; i++)
+    {
+        Data tmp = va_arg(args,Data);
+        printf("Data.x at %d is: %d\n", i,tmp.x);
+        printf("Data.y at %d is: %f\n", i,tmp.y);
+    }
+   
+    va_end(args);
+}
+
+int main(int argc, char const *argv[])
+{
+    display(3, (Data){2,5.0} , (Data){10,57.0}, (Data){29,36.0});
+    return 0;
+}
+```
+
+<br>
+
+💻
+```cpp
+#include <stdio.h>
+#include <stdarg.h>
+
+typedef enum {
+    TEMPERATURE_SENSOR,
+    PRESSURE_SENSOR
+} SensorType;
+
+void processSensorData(SensorType type, ...) {
+    va_list args;
+    va_start(args, type);
+
+    switch (type){
+        case TEMPERATURE_SENSOR:{
+            int numArgs  = va_arg(args, int);
+            int sensorId = va_arg(args, int);
+            double temperature = va_arg(args, double); 
+
+            printf("Temperature Sensor ID: %d, Reading: %.2f degrees\n", sensorId, temperature);
+            if (numArgs > 2){
+                // Xử lý thêm tham số nếu có
+                char *additionalInfo = va_arg(args, char*);
+                printf("Additional Info: %s\n", additionalInfo);
+            }
+            break;
+        }
+        case PRESSURE_SENSOR:{
+            int numArgs = va_arg(args, int);
+            int sensorId = va_arg(args, int);
+            int pressure = va_arg(args, int);
+
+            printf("Pressure Sensor ID: %d, Reading: %d Pa\n", sensorId, pressure);
+            if (numArgs > 2) {
+                // Xử lý thêm tham số nếu có
+                char *unit = va_arg(args, char*);
+                printf("Unit: %s\n", unit);
+            }
+            break;
+        }
+    }
+
+    va_end(args);
+}
+
+int main(int argc, char const *argv[])
+{
+    processSensorData(TEMPERATURE_SENSOR, 3, 1, 36.5, "Room Temperature");
+    processSensorData(PRESSURE_SENSOR, 4, 2, 101325, 123, "aads");
+    return 0;
+}
+```
+
+<br>
+
+💻
+```cpp
+#include <stdio.h>
+#include <stdarg.h>
+
+typedef enum {
+    TURN_ON,
+    TURN_OFF,
+    SET_LEVEL,
+    SEND_MESSAGE
+} CommandType;
+
+void sendCommand(CommandType command, ...) {
+    va_list args;
+    va_start(args, command);
+
+    switch (command) {
+        case TURN_ON:
+        case TURN_OFF: {
+            int deviceID = va_arg(args, int);
+            printf("Command: %s Device ID: %d\n", command == TURN_ON ? "Turn On" : "Turn Off", deviceID);
+            break;
+        }
+        case SET_LEVEL: {
+            int deviceID = va_arg(args, int);
+            int level = va_arg(args, int);
+            printf("Set Level of Device ID %d to %d\n", deviceID, level);
+            break;
+        }
+        case SEND_MESSAGE: {
+            char* message = va_arg(args, char*);
+            printf("Send Message: %s\n", message);
+            break;
+        }
+    }
+
+    va_end(args);
+}
+
+int main() {
+    sendCommand(TURN_ON, 1);
+    sendCommand(TURN_OFF, 5);
+    sendCommand(SET_LEVEL, 3, 75);
+    sendCommand(SEND_MESSAGE, "Hello World");
+    return 0;
+}
+```
+<br>
+
+</p>
+</details>
+
+</p>
+</details>
+
 # C++
 <details><summary>Nhấp vào để xem chi tiết</summary>
 <p>
