@@ -1671,9 +1671,6 @@ static <data_type> <name_variable>;
 static <data_type> <name_function>;
 ```
 
-</p>
-</details>
-
 <details><summary><b>📚📚 Static local</b></summary>
 <p>
 	
