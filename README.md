@@ -3569,15 +3569,540 @@ void function() {
 </detail>
 
 </p>
-</detail>
+</details>
 
 <br>
 
+<details><summary><b>12. Linked List</b></summary>
+<p>
+
+<details><summary><b>12.1. Khái niệm</b></summary>
+<p>
+
+Danh sách liên kết (Linked List) là một cấu trúc dữ liệu trong lập trình máy tính, được sử dụng để tổ chức và lưu trữ dữ liệu. Một Linked list bao gồm một chuỗi các nút (nodes) được phân bổ động, được sắp xếp theo cách mà mỗi node sẽ chứa một giá trị và một con trỏ (pointer) trỏ đến node tiếp theo nó. Nếu con trỏ là NULL thì nó là node cuối cùng trong danh sách.
+
+Có hai loại linked list chính:
+
+- Singly Linked List (Danh sách liên kết đơn): Mỗi nút chỉ chứa một con trỏ đến nút tiếp theo trong chuỗi.
+- Doubly Linked List (Danh sách liên kết đôi): Mỗi nút chứa hai con trỏ, một trỏ đến nút tiếp theo và một trỏ đến nút trước đó.
+
+Một linked list cung cấp một cách linh hoạt để thêm, xóa và chèn các phần tử mà không cần phải di chuyển toàn bộ dãy số như mảng. Tuy nhiên, nó cũng có một số nhược điểm, như việc cần thêm một con trỏ cho mỗi nút, tăng độ phức tạp của bộ nhớ và có thể dẫn đến hiệu suất kém hơn trong một số trường hợp so với mảng.
+
+![image](https://github.com/user-attachments/assets/c2669fde-dacb-4f2b-9cd8-cb861c7e9e3e)
 
 </p>
 </details>
 
-2
+<details><summary><b>12.2. Các thao tác chính trong danh sách liên kết đơn</b></summary>
+<p>
+
+<details><summary><b>📚 Khởi tạo 1 node mới</b></summary>
+<p>
+
+```cpp
+typedef struct Node{
+    int data;
+    struct Node *next;
+} Node_t;
+
+// khởi tạo giá trị ban đầu và trả địa chỉ về cho node được cấp phát.
+Node_t *createNode(int data){
+    Node_t *temp = (Node_t*)malloc(sizeof(Node_t));
+    temp->data = data;
+    temp->next = NULL;
+    // node vừa tạo chưa liên kết với phần tử nào nên phần liên kết gán bằng NULL
+    return temp;
+}
+```
+
+</p>
+</details>
+
+<details><summary><b>📚 Thêm node mới vào đầu danh sách</b></summary>
+<p>
+
+```cpp
+void push_front(Node_t **head, int data){
+    Node_t *new_node = createNode(data);
+    if (*head == NULL){
+        *head = new_node;
+    }
+    else{
+        new_node->next = *head;
+        *head = new_node;
+    }
+}
+```
+
+</p>
+</details>
+
+<details><summary><b>📚 Thêm node mới vào cuối danh sách</b></summary>
+<p>
+
+```cpp
+void push_back(Node_t **head, int data){
+    Node_t *new_node = createNode(data);
+    if (*head == NULL){
+        *head = new_node;
+    }
+    else{
+        Node_t *p = *head;
+        while (p->next != NULL){
+            p = p->next;
+        }
+        p->next = createNode(data);
+    }
+}
+```
+
+</p>
+</details>
+
+<details><summary><b>📚 Thêm node mới vào vị trí bất kỳ trong danh sách</b></summary>
+<p>
+
+```cpp
+void insert(Node_t **head, int data, int position){
+    Node_t *new_node = createNode(data);
+    Node_t *p = *head;
+    int k = 0;
+
+    while (p->next != NULL && k != position-1){
+        p = p->next;
+        k++;
+    }
+    
+    if (k == position-1){
+        new_node->next = p->next;
+        p->next = new_node;
+    }
+    else return;
+}
+```
+
+</p>
+</details>
+
+<details><summary><b>📚 Xóa node ở đầu danh sách</b></summary>
+<p>
+
+```cpp
+void pop_front(Node_t **head){
+    Node_t *new_head = (*head)->next;
+    free(*head);
+    *head = new_head;
+}
+```
+
+</p>
+</details>
+
+<details><summary><b>📚 Xóa node ở cuối danh sách</b></summary>
+<p>
+
+```cpp
+void pop_back(Node_t **head){
+    if (*head == NULL){
+        free(*head);
+    }
+    else{
+        Node_t *p = *head;
+        while (p->next->next != NULL){
+            p = p->next;
+        }
+        free(p->next);
+        p->next = NULL;
+    }
+}
+```
+
+</p>
+</details>
+
+<details><summary><b>📚 Xóa node ở vị trí bất kỳ trong danh sách</b></summary>
+<p>
+
+```cpp
+void delete_node(Node_t **head, int position){
+    Node_t *p = *head;
+    int k = 0;
+
+    while (p != NULL && k != position-1){
+        p = p->next;
+        k++;
+    }
+
+    if (k == position-1){
+        Node_t *node_delete = p->next;
+        p->next = p->next->next;
+        free(node_delete);
+    }
+    else return;
+}
+```
+
+</p>
+</details>
+
+<details><summary><b>📚 Xóa toàn bộ node trong danh sách</b></summary>
+<p>
+
+```cpp
+void clear_all(Node_t **head){
+    Node_t *p = *head;
+    while (p != NULL){
+        Node_t *temp = p->next;
+        free(p);
+        p = temp;
+    }
+    *head = NULL;
+}
+```
+
+</p>
+</details>
+
+<details><summary><b>📚 Tính kích thước danh sách</b></summary>
+<p>
+
+```cpp
+int size(Node_t *head){
+    Node_t *p = head;
+    int count = 0;
+    while (p != NULL){
+        count++;
+        p = p->next;
+    }
+    return count;
+}
+```
+
+</p>
+</details>
+
+</p>
+</details>
+
+</p>
+</details>
+
+<br>
+
+<details><summary><b>13. Stack (Ngăn xếp)</b></summary>
+<p>
+
+<details><summary><b>13.1. Khái niệm</b></summary>
+<p>
+
+- Lưu trữ biến cục bộ và tham số truyền vào của hàm.
+- Quyền truy cập đọc - ghi.
+- Địa chỉ các biến bị thu hồi khi kết thúc hàm.
+- Hoạt động theo nguyên tắc **"Last In, First Out"** (LIFO), nghĩa là phần tử cuối cùng được thêm vào stack sẽ là phần tử đầu tiên được lấy ra.
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>13.2. Các thao tác trên Stack</b></summary>
+<p>
+
+<details><summary><b>📚 Khởi tạo một Stack</b></summary>
+<p>
+
+```cpp
+typedef struct{
+    int *items; // mảng lưu trữ giá trị các phần tử
+    int size;   // kích thước stack (số lượng phần tử có trong Stack)
+    int top;	// chỉ số của phần tử ở đỉnh stack
+} Stack;
+
+void initialize(Stack *stack, int size){
+    stack->items = (int*)malloc(sizeof(int)*size);
+    stack->size  = size;
+    stack->top   = -1;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 push</b></summary>
+<p>
+
+Thêm một phần tử vào đỉnh Stack.
+
+![push](https://drive.google.com/uc?id=1ef0gBl5fAJLY5tnV7o5KZ3yvEbZtqO3X)
+
+💻
+```cpp
+void push(Stack *stack, int value){
+    if (!isFull(*stack)){
+        stack->items[++stack->top] = value;
+    } 
+    else{
+        printf("Stack overflow\n");
+    }
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 pop</b></summary>
+<p>
+
+Xóa một phần tử ở đỉnh Stack.
+
+![pop](https://drive.google.com/uc?id=1_5GZao45wgCi6cauwsMyWBbsY6UMsGGO)
+
+💻
+```cpp
+int pop(Stack *stack){
+    if (!isEmpty(*stack)){
+        return stack->items[stack->top--];
+    } 
+    else{
+        printf("Stack underflow\n");
+        return -1;
+    }
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 top</b></summary>
+<p>
+
+Lấy giá trị của phần tử ở đỉnh Stack.
+
+💻
+```cpp
+int top(Stack stack){
+    if (!isEmpty(stack)){
+        return stack.items[stack.top];
+    } 
+    else{
+        printf("Stack is empty\n");
+        return -1;
+    }
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 Kiểm tra Stack rỗng</b></summary>
+<p>
+
+💻
+```cpp
+int isEmpty(Stack stack){
+    return stack.top == -1;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 Kiểm tra Stack đầy</b></summary>
+<p>
+
+💻
+```cpp
+int isFull(Stack stack){
+    return stack.top == (stack.size - 1);
+}
+```
+
+<br>
+
+</p>
+</details>
+ 
+</p>
+</details>
+
+</p>
+</details>
+
+<br>
+
+<details><summary><b>14. Queue (Hàng đợi)</b></summary>
+<p>
+
+<details><summary><b>14.1. Khái niệm</b></summary>
+<p>
+
+- Queue là một cấu trúc dữ liệu tuân theo nguyên tắc "First In, First Out" (FIFO), nghĩa là phần tử đầu tiên được thêm vào hàng đợi sẽ là phần tử đầu tiên được lấy ra. 
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>14.2. Các thao tác trên Queue</b></summary>
+<p>
+
+<details><summary><b>📚 Khởi tạo một Queue</b></summary>
+<p>
+
+```cpp
+typedef struct{
+    int *item;    // mảng chứa các giá trị của phần tử trong queue
+    int size;     // kích thước của queue
+    int front;    // vị trí phần tử đầu queue
+    int rear;     // vị trí phần tử cuối queue
+} Queue;
+
+Queue *initialize(int size){
+    Queue *queue = (Queue*)malloc(sizeof(Queue));
+    queue->item  = (int*)malloc(size * sizeof(int));
+    queue->size  = size;
+    queue->front = queue->rear = -1;
+    return queue;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+![queue](https://drive.google.com/uc?id=1h6uwf3TiU4wA8eOgTSxVohd13ibq8szi)
+
+<details><summary><b>📚 enqueue</b></summary>
+<p>
+
+Thêm phần tử vào cuối hàng đợi.
+
+💻
+```cpp
+void enqueue(Queue *queue, int data){
+    if (isFull(*queue)){
+        // nếu queue đầy thì không cho thêm phần tử vào
+        printf("Queue overflow\n");
+    } 
+    else{
+        if (isEmpty(*queue)){
+            queue->front = queue->rear = 0;
+        }
+        else{
+            queue->rear = (queue->rear + 1) % queue->size;
+        }
+        queue->item[queue->rear] = data;
+    }
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 dequeue</b></summary>
+<p>
+
+Xóa phần tử từ đầu hàng đợi.
+
+💻
+```cpp
+int dequeue(Queue *queue){
+    if (isEmpty(*queue)){
+        // nếu queue rỗng thì không cho xóa
+        printf("Queue underflow\n");
+        return -1;
+    }
+    else{
+        int dequeue_value = queue->item[queue->front];
+        if (queue->front == queue->rear){
+            queue->front = queue->rear = -1;
+        }
+        else{
+            queue->front = (queue->front + 1) % queue->size;
+        }
+        return dequeue_value;
+    }
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 front</b></summary>
+<p>
+
+Lấy giá trị của phần tử đứng đầu hàng đợi.
+
+💻
+```cpp
+int front(Queue queue){
+    if (isEmpty(queue)){
+        printf("Queue is empty\n");
+        return -1;
+    }
+    else{
+        return queue.item[queue.front];
+    }
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 Kiểm tra hàng đợi rỗng</b></summary>
+<p>
+
+💻
+```cpp
+int isEmpty(Queue queue){
+    return (queue.front == -1);
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 Kiểm tra hàng đợi đầy</b></summary>
+<p>
+
+💻
+```cpp
+int isFull(Queue queue){
+    return (queue.rear + 1) % queue.size == queue.front;
+}
+```
+
+<br>
+
+</p>
+</details>
+ 
+</p>
+</details>
+
+</p>
+</details>
+
+<br>
 
 </p>
 </details>
