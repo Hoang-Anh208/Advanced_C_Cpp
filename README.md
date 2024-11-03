@@ -1573,9 +1573,6 @@ int main(int argc, char const *argv[])
 }
 ```
 
-</p>
-</details>
-
 **Ứng dụng**:
 
 - Thiết kế thư viện.
