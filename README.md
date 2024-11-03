@@ -1129,9 +1129,6 @@ double: truy cập 8 byte tại địa chỉ pointer trỏ đến.
 
 <br>
 
-</p>
-</details>
-
 **Ứng dụng con trỏ**:
 
 🖥️ Ví dụ: Nhập số từ bàn phím
@@ -1186,6 +1183,11 @@ int main(int argc, char const *argv[])
     return 0;
 }
 ```
+
+<br>
+
+</p>
+</details>
 
 <details><summary><b>5.3. Các kiểu con trỏ</b></summary>
 <p>
