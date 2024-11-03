@@ -2871,7 +2871,7 @@ int main(int argc, char const *argv[])
 </p>
 </details>
 
-<details><summary><b>📚 Ứng dụng két hợp Struct và Union</b></summary>
+<details><summary><b>📚 Ứng dụng kết hợp Struct và Union</b></summary>
 <p>
 
 - Truyền dữ liệu từ MCUA sang MCUB
@@ -2949,16 +2949,6 @@ int main(int argc, char const *argv[])
 
 </p>
 </details>
-
-</p>
-</details>
-
-<br>
-
-</p>
-</details>
-
-<br>
 
 <details><summary><b>10. Memory layout (Phân vùng nhớ)</b></summary>
 <p>
@@ -3456,6 +3446,13 @@ void function() {
 </details>
 
 <br>
+
+</p>
+</details>
+
+<br>
+
+
 
 </p>
 </details>
