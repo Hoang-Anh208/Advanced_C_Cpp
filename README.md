@@ -2,10 +2,10 @@
 <details><summary>Nhấp vào để xem chi tiết</summary>
 <p>
 
-<details><summary><b> 1. Compiler</b></summary>
+<details><summary><b>1. Compiler</b></summary>
 <p>
 
-<details><summary><b>📚 Giới thiệu về compiler</b></summary>
+<details><summary><b>1.1. Giới thiệu về compiler</b></summary>
 <p>
 
 Các ngôn ngữ lập trình thường dùng như C/C++, Java, Python, C#... được gọi là ngôn ngữ bậc cao. Khi code xong nhấn run thì chương trình chạy trên monitor, tưởng chừng như rất đơn giản nhưng thực chất phải trải qua rất nhiều bước xử lý phức tạp.
@@ -27,16 +27,18 @@ Quá trình biên dịch của gcc sẽ trải qua 4 bước chính:
 </p>
 </details>
 
-<details><summary><b>📚 Compiler process</b></summary>
+<details><summary><b>1.2. Compiler process</b></summary>
 <p>
 
-<details><summary><b>🔍 1. Quá trình tiền xử lý (Preprocessor)</b></summary>
+Quá trình biên dịch một chương trình C sẽ trải qua 4 bước theo thứ tự như sau:
+
+<details><summary><b>📚 Quá trình tiền xử lý (Preprocessor)</b></summary>
 <p>
 
 - Nhận mã nguồn.
-- Xóa bỏ tất cả chú thích, comment trong chương trình.
+- Xóa bỏ tất cả chú thích (comment) trong chương trình.
 - Các đoạn mã khi được thêm vào (#include) sẽ được copy vào file .i
-- Các định nghĩa (#define) cũng sẽ được copy vào file .i
+- Các định nghĩa (#define) cũng sẽ được thay thế trong file .i
 - Câu lệnh: ``` gcc -E file.c -o file.i ```
 
 💻
@@ -115,7 +117,7 @@ int main(int argc, char const *argv[])
 </p>
 </details>
 
-<details><summary><b>🔍 2. Quá trình dịch ngôn ngữ bậc cao sang Assembly (Compiler)</b></summary>
+<details><summary><b>📚 Quá trình dịch ngôn ngữ bậc cao sang Assembly (Compiler)</b></summary>
 <p>
 
 - Phân tích cú pháp (syntax) sau đó chuyển sang Assembly code – hợp ngữ, là ngôn ngữ bậc thấp gần với tập lệnh của bộ vi xử lý.
@@ -159,7 +161,7 @@ display:
 </p>
 </details>
 
-<details><summary><b>🔍 3. Quá trình dịch Assembly sang ngôn ngữ máy (Assembler)</b></summary>
+<details><summary><b>📚 Quá trình dịch Assembly sang ngôn ngữ máy (Assembler)</b></summary>
 <p>
 
 - Dịch chương trình sang mã máy 0 và 1.
@@ -176,7 +178,7 @@ File **main.o**
 </p>
 </details>
 
-<details><summary><b>🔍 4. Quá trình liên kết (Linker)</b></summary>
+<details><summary><b>📚 Quá trình liên kết (Linker)</b></summary>
 <p>
 
 - Trong giai đoạn này mã máy của một chương trình dịch từ nhiều nguồn (file .c hoặc file thư viện .lib) được liên kết lại với nhau để tạo thành chương trình đích duy nhất.
@@ -195,12 +197,10 @@ File **main.o**
 </p>
 </details>
 
-<br>
-
 <details><summary><b> 2. Macro</b></summary>
 <p>
 
-<details><summary><b>📚 Giới thiệu về Macro</b></summary>
+<details><summary><b>2.1. Giới thiệu về Macro</b></summary>
 <p>
 
 - Macro là từ dùng để chỉ những thông tin được xử lý ở quá trình tiền xử lý (Preprocessor), được sử dụng để thay thế một đoạn mã trước khi chương trình được biên dịch.
@@ -209,30 +209,34 @@ File **main.o**
 </p>
 </details>
 
-<details><summary><b>📚 Các nhóm chỉ thị Macro</b></summary>
+<details><summary><b>2.2. Các nhóm chỉ thị Macro</b></summary>
 <p>
 
-<details><summary><b>🔍 Chi thị bao hàm tệp (#include)</b></summary>
+<details><summary><b>📚 Chi thị bao hàm tệp (#include)</b></summary>
 <p>
 
 - Chỉ thị #include dùng để chèn nội dung của một file khác vào mã nguồn chương trình.
 - Tái sử dụng mã nguồn.
 - Phân chia chương trình thành các phần nhỏ, giúp quản lý mã nguồn hiệu quả.
 - Khi sử dụng **<>** thì preprocessor sẽ thêm nội dung những file.h trong thư mục cài đặt. 
+
 ```cpp
 #include <stdio.h>
 #include <stdlib.h>
 ```
 - Khi sử dụng dấu **""**, bộ tiền xử lý sẽ tìm file name trong thư mục chứa project. Nếu tìm không thấy thì nó sẽ tiếp tục tìm trong các file có sẵn trong thư mục cài đặt.
 
-``` #include "uart.h" ```
+```cpp
+#include "uart.h"
+#include "spi.h"
+```
 
 <br>
 
 </p>
 </details>
 
-<details><summary><b>🔍 Chi thị định nghĩa Macro (#define)</b></summary>
+<details><summary><b>📚 Chi thị định nghĩa Macro (#define)</b></summary>
 <p>
 
 Chỉ thị #define dùng để thay thế một chuỗi mã nguồn bằng một chuỗi khác trước khi chương trình biên dịch. Nó giúp giảm lặp lại mã, dễ bảo trì chương trình.
@@ -360,7 +364,7 @@ int main(int argc, char const *argv[])
 </p>
 </details>
 
-<details><summary><b>🔍 Chi thị hủy định nghĩa Macro (#undef)</b></summary>
+<details><summary><b>📚 Chi thị hủy định nghĩa Macro (#undef)</b></summary>
 <p>
 
 Chỉ thị #undef dùng để hủy định nghĩa của một macro đã được định nghĩa trước đó bằng #define.
@@ -390,7 +394,7 @@ int main(int argc, char const *argv[])
 </p>
 </details>
 
-<details><summary><b>🔍 Chỉ thị biên dịch có điều kiện (#if, #elif, #else, #ifdef, #ifndef)</b></summary>
+<details><summary><b>📚 Chỉ thị biên dịch có điều kiện (#if, #elif, #else, #ifdef, #ifndef)</b></summary>
 <p>
 
 - Chỉ thị #ifdef dùng để kiểm tra một macro đã được định nghĩa hay chưa, nếu macro đã được định nghĩa thì mã nguồn sau #ifdef sẽ được biên dịch.
@@ -498,7 +502,7 @@ int main(int argc, char const *argv[])
 </p>
 </details>
 
-<details><summary><b>🔍 Một số toán tử Macro</b></summary>
+<details><summary><b>📚 Một số toán tử Macro</b></summary>
 <p>
 
 - Sử dụng **##** để nối chuỗi.
@@ -643,8 +647,6 @@ int main(int argc, char const *argv[])
 
 </p>
 </details>
-
-<br>
 
 # C++
 <details><summary>Nhấp vào để xem chi tiết</summary>
