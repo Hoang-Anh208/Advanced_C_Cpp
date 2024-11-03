@@ -645,9 +645,6 @@ int main(int argc, char const *argv[])
 
 <br>
 
-</p>
-</details>
-
 <details><summary><b>3. Thư viện STDARG</b></summary>
 <p>
 
@@ -983,6 +980,9 @@ int main() {
 }
 ```
 <br>
+
+</p>
+</details>
 
 </p>
 </details>
