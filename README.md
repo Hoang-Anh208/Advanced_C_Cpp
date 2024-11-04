@@ -6289,6 +6289,354 @@ int main(int argc, char const *argv[]){
 <details><summary><b>5. Hàm ảo (Virtual Function)</b></summary>
 <p>
 
+<details><summary><b>5.1. Khái niệm</b></summary>
+<p>
+
+- Virtual Function (hàm ảo) là một hàm thành viên được khai báo trong lớp cha với từ khóa ``` virtual ```.
+- Khi một hàm là virtual, nó có thể được ghi đè (``` override ```) trong các lớp con.
+- Khi gọi một hàm ảo thông qua một con trỏ hoặc tham chiếu đến lớp con, hàm sẽ được quyết định dựa trên đối tượng thực tế mà con trỏ hoặc tham chiếu đang trỏ tới chứ không dựa vào kiểu của con trỏ.
+
+💻 **Ví dụ:**
+```cpp
+class Base{
+	public:
+	    virtual void display(){
+	        cout << "Display from Base class" << endl;
+	    }
+};
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>5.2. Override (Ghi đè hàm ảo)</b></summary>
+<p>
+
+- Các lớp con có thể ghi đè hàm ảo bằng cách định nghĩa lại nó.
+- Khi một hàm ảo được ghi đè, hành vi của nó sẽ phụ thuộc vào kiểu của đối tượng thực tế, chứ không phải kiểu của con trỏ hay tham chiếu.
+
+<br>
+
+💻 **Ví dụ 1:**
+```cpp
+#include <iostream>
+using namespace std;
+
+class cha{
+    public:
+        virtual void display(){                            // Hàm ảo
+            cout << "display from class cha" << endl;
+        }
+};
+
+class con : public cha{
+    public:
+        void display() override{                           // Ghi đè hàm ảo
+            cout << "display from class con" << endl;
+        }
+};
+
+int main(){
+    cha *ptr;
+    con obj;
+
+    // trỏ con trỏ class cha đến đối tượng class con
+    ptr = &obj;
+
+    // Gọi hàm ảo
+    ptr->display();
+}
+```
+**Kết quả**:
+```cpp
+display from class con
+```
+
+<br>
+
+💻 **Ví dụ 2:**
+```cpp
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class DoiTuong{
+    protected:
+        string ten;
+        int id;
+
+    public:
+        DoiTuong(){  
+            static int ID = 1;
+            id = ID;
+            ID++;
+        }
+
+        void setName(string _ten){
+            // check chuỗi nhập vào
+            ten = _ten;
+        }
+
+        virtual void display(){
+            cout << "ten: " << ten << endl;
+            cout << "id: " << id << endl;
+        }
+};
+
+class SinhVien : public DoiTuong{
+    protected:
+        string chuyenNganh;
+
+    public:
+        void setChuyenNganh(string _nganh){
+            chuyenNganh = _nganh;
+        }
+
+        void display() override {
+            cout << "ten: " << ten << endl;
+            cout << "id: " << id << endl;
+            cout << "chuyen nganh: " << chuyenNganh << endl;
+        }
+};
+
+class HocSinh : public DoiTuong{
+    protected:
+        string lop;
+   
+    public:
+        void setLop(string _lop){
+            lop = _lop;
+        }
+
+        void display() override {
+            cout << "ten: " << ten << endl;
+            cout << "id: " << id << endl;
+            cout << "lop: " << lop << endl;
+        }
+};
+
+class GiaoVien : public DoiTuong{
+    protected:
+        string chuyenMon;
+
+    public:
+        void setChuyenMon(string _mon){
+            chuyenMon = _mon;
+        }
+
+        void display() override {
+            cout << "ten: " << ten << endl;
+            cout << "id: " << id << endl;
+            cout << "chuyen mon: " << chuyenMon << endl;
+        }
+};
+
+int main(int argc, char const *argv[])
+{
+    SinhVien sv1;
+    sv1.setName("Trung");
+    sv1.setChuyenNganh("TDH");
+
+    HocSinh hs1;
+    hs1.setName("Tuan");
+    hs1.setLop("12A1");
+
+    GiaoVien gv1;
+    gv1.setName("Hoang");
+    gv1.setChuyenMon("Toan");
+
+    DoiTuong *dt;
+
+    dt = &sv1;
+    dt->display();
+
+    dt = &hs1;
+    dt->display();
+
+    dt = &gv1;
+    dt->display();
+
+
+    // DoiTuong *ptr[] = {&sv1, &hs1, &gv1};
+
+    // ptr[0]->display();
+    // ptr[1]->display();
+    // ptr[2]->display();
+
+    return 0;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>5.3. Hàm ảo thuần túy (Pure Virtual Function)</b></summary>
+<p>
+
+- Hàm ảo thuần túy là một hàm ảo không có phần định nghĩa trong class cha, được khai báo với cú pháp = 0 và khiến class cha trở thành class trừu tượng, nghĩa là không thể tạo đối tượng từ class này.
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+using namespace std;
+
+class Base{
+    public:
+        virtual void display() = 0;
+};
+
+int main(int argc, char const *argv[])
+{
+    Base baseObj;
+    return 0;
+}
+```
+**Kết quả**:
+```cpp
+error: cannot declare variable 'baseObj' to be of abstract type 'Base'
+```
+
+<br>
+
+- Hàm ảo thuần túy phải được ghi đè trong class con và chỉ các class con đã ghi đè tất cả các hàm ảo thuần túy mới có thể tạo ra đối tượng.
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+using namespace std;
+
+class cha{
+    public:
+        virtual void display() = 0; // Hàm ảo thuần túy
+};
+
+class con : public cha{
+    public:
+        void display() override{   // Ghi đè hàm ảo thuần túy
+            cout << "display from class con" << endl;
+        }
+};
+
+int main(){
+    cha *ptr;
+    con obj;
+
+    ptr = &obj;
+    ptr->display(); // Output: display from class con
+
+    return 0;
+}
+```
+
+📝 Con trỏ ptr là của class cha, nhưng nó trỏ đến đối tượng của class con.
+
+📝 Method display() trong class cha được khai báo là hàm thuần ảo, vì vậy khi gọi ``` ptr->display() ```, C++ sẽ kiểm tra xem đối tượng thực sự mà ptr trỏ tới là gì, và cụ thể ở đây là object ``` obj ``` của class con và nó gọi hàm ``` display() ``` của class con.
+
+📝 Đây là **đa hình**: Cùng một giao diện, nhưng hành vi thực tế khác nhau dựa trên kiểu của đối tượng thực sự.
+
+<br>
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class Xe{
+    public:
+        virtual void hienThiThongTin() = 0;
+};
+
+class Toyota : public Xe{
+    private:
+        string model;
+        int namSanXuat;
+        string dongCo;
+
+    public:
+        Toyota(string m, int nam, string dongCo): model(m), namSanXuat(nam), dongCo(dongCo){}
+
+        void hienThiThongTin() override {
+            cout << "Hang xe: Toyota\n";
+            cout << "Model: " << model << "\n";
+            cout << "Nam san xuat: " << namSanXuat << "\n";
+            cout << "Dong co: " << dongCo << "\n";
+        }
+};
+
+class Honda : public Xe{
+    private:
+        string model;
+        int namSanXuat;
+        string mauSac;
+
+    public:
+        Honda(string m, int nam, string mau): model(m), namSanXuat(nam), mauSac(mau){}
+
+        void hienThiThongTin() override {
+            cout << "Hang xe: Honda\n";
+            cout << "Model: " << model << "\n";
+            cout << "Nam san xuat: " << namSanXuat << "\n";
+            cout << "Mau sac: " << mauSac << "\n";
+        }
+};
+
+class Mazda : public Xe{
+    private:
+        string model;
+        int namSanXuat;
+        string loaiDanDong;
+
+    public:
+        Mazda(string m, int nam, string loaiDanDong): model(m), namSanXuat(nam), loaiDanDong(loaiDanDong){}
+
+        void hienThiThongTin() override {
+            cout << "Hang xe: Mazda\n";
+            cout << "Model: " << model << "\n";
+            cout << "Nam san xuat: " << namSanXuat << "\n";
+            cout << "Loai dan dong: " << loaiDanDong << "\n";
+        }
+};
+
+int main() {
+    // Toyota to;
+    // Honda ho;
+    // Mazda mz;
+    // Xe *xe;
+
+    // xe = &to;
+    // xe->hienThiThongTin();
+   
+    Mazda cx3("CX-3", 2019, "Dan dong 4 banh");
+
+    Xe *ptr[] = {new Toyota("campry", 2020, "V6"),
+                 new Honda("civic", 2019, "do"),
+                 new Mazda("CX-5", 2021, "Dan dong 4 banh"),
+                 new Toyota("corolla", 2018, "I4 1.8L"),
+                 new Honda("accord", 2020, "den"),
+                 &cx3};
+   
+    for (int i=0; i<6; i++){
+        ptr[i]->hienThiThongTin();
+        cout << "--------------" << endl;
+        delete ptr[i];
+    }
+
+    return 0;
+}
+```
+
+<br>
+
+</p>
+</details>
+
 </p>
 </details>
 
@@ -6296,6 +6644,125 @@ int main(int argc, char const *argv[]){
 
 <details><summary><b>6. Template</b></summary>
 <p>
+
+Template là một tính năng mạnh mẽ giúp viết mã tổng quát, có thể làm việc với nhiều kiểu dữ liệu khác nhau mà không cần phải viết lại mã cho từng kiểu cụ thể. Có hai loại template chính trong C++:
+
+- Function Template (Hàm mẫu)
+- Class Template (Lớp mẫu)
+
+<details><summary><b>6.1. Function Template (Hàm mẫu)</b></summary>
+<p>
+
+Hàm mẫu cho phép viết một hàm tổng quát có thể hoạt động với nhiều kiểu dữ liệu khác nhau.
+
+💻 **Ví dụ 1:**
+```cpp
+#include <iostream>
+
+using namespace std;
+
+template <typename T>
+
+T sum(T a, T b){
+    return a+b;
+}
+
+int main(int argc, char const *argv[])
+{
+    cout << "Sum: " << sum(1, 5) << endl;
+    cout << "Sum: " << sum(1.5, 5.8) << endl;
+    // cout << "Sum: " << sum(1, 5.8) << endl; // wrong
+    return 0;
+}
+```
+
+📝 Khi gọi hàm sum, compiler sẽ suy luận kiểu dựa trên các tham số truyền vào.
+
+📝 Hàm trên tính tổng 2 số nhưng tham số truyền vào phải cùng kiểu dữ liệu ( (int, int) hoặc (double, double) hoặc (float, float) ...). Nếu cố tình truyền vào 2 tham số với kiểu dữ liệu khác nhau thì compiler sẽ báo lỗi ``` error: no matching function for call to 'sum(int, double)' ```
+
+📝 Nếu muốn tính tổng 2 số có kiểu dữ liệu khác nhau thì phải khai báo một template khác.
+
+<br>
+
+💻 **Ví dụ 2:**
+```cpp
+#include <iostream>
+
+using namespace std;
+
+template <typename typeA, typename typeB>
+
+auto sum(typeA a, typeB b){
+    return a+b;
+}
+
+int main(int argc, char const *argv[])
+{
+    cout << "Sum: " << sum(1, 5) << endl;
+    cout << "Sum: " << sum(1.5, 5.8) << endl;
+    cout << "Sum: " << sum(1.6, 5) << endl; 
+    return 0;
+}
+```
+
+📝 Từ khóa auto để cho phép trình biên dịch tự động suy ra kiểu trả về của phép cộng giữa a và b.
+
+📝 Phiên bản này tổng quát hơn so với phiên bản ban đầu vì nó có thể xử lý hai kiểu dữ liệu khác nhau.
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>6.2. Class Template (Lớp mẫu)</b></summary>
+<p>
+
+Lớp mẫu cho phép định nghĩa các lớp chung chung có thể hoạt động với các kiểu dữ liệu khác nhau.
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+
+using namespace std;
+
+template <typename T>
+
+class Sensor{
+    private:
+        T value;
+    
+    public: 
+        Sensor(T init): value(init){}
+
+        void readSensor(T newValue){
+            value = newValue;
+        }
+
+        T getValue(){
+            return value;
+        }
+
+        void display(){
+            cout << "Gia tri cam bien: " << value << endl;
+        }
+};
+
+int main(int argc, char const *argv[])
+{
+    Sensor<double> tempSensor(25.7);
+    tempSensor.display();
+
+    Sensor<int> lightSensor(512);
+    lightSensor.display();
+
+    Sensor<string> stateSensor("OFF");
+    stateSensor.display();
+    return 0;
+}
+```
+
+</p>
+</details>
 
 </p>
 </details>
@@ -6305,6 +6772,340 @@ int main(int argc, char const *argv[]){
 <details><summary><b>7. Namespace</b></summary>
 <p>
 
+<details><summary><b>7.1. Khái niệm</b></summary>
+<p>
+
+- Namespace là từ khóa trong C++ được sử dụng để định nghĩa một phạm vi nhằm mục đích phân biệt các biến, hàm, class, ... cùng tên trong các phần của chương trình hoặc các thư viện khác nhau.
+- Cú pháp:
+```cpp
+namespace name_of_namespace{
+    /* source code */
+}
+```
+
+💻 **Ví dụ 1:**
+File B.cpp
+```cpp
+#include <iostream>
+
+using namespace std;
+
+namespace fileB{
+    void display(int id){
+        cout << "This is file B.cpp, id = " << id << endl;
+    }
+}
+```
+
+File C.cpp
+```cpp
+#include <iostream>
+
+using namespace std;
+
+namespace fileC{
+    void display(int id){
+        cout << "This is file C.cpp, id = " << id << endl;
+    }
+}
+```
+
+File A.cpp
+```cpp
+#include <iostream>
+#include "fileB.cpp"
+#include "fileC.cpp"
+
+using namespace std;
+
+int main(int argc, char const *argv[])
+{
+    fileB::display(2);
+    fileC::display(2);
+    return 0;
+}
+```
+
+<br>
+
+💻 **Ví dụ 2:**
+```cpp
+#include <iostream>
+
+
+using namespace std;
+
+
+namespace A{
+    char *name = (char*)"Trung 20";
+
+
+    void display(){
+        cout << "Name: " << name << endl;
+    }
+}
+
+
+namespace B{
+    char *name = (char*)"Trung 21";
+
+
+    void display(){
+        cout << "Name: " << name << endl;
+    }
+
+
+    class SinhVien{
+        private:
+            string name;
+            int id;
+        
+        public:
+            SinhVien(){
+                static int _ID = 1;
+                id = _ID;
+                _ID++;
+            }
+
+
+            void setName(string newName){
+                name = newName;
+            }
+
+
+            string getName() const{
+                return name;
+            }
+
+
+            int getID() const{
+                return id;
+            }
+
+
+            void display(){
+                cout << "Tên sinh viên: " << getName() << endl;
+                cout << "ID: " << getID() << endl;
+            }
+    };
+}
+
+
+int main(int argc, char const *argv[])
+{
+    cout << "Name: " << A::name << endl;
+    cout << "Name: " << B::name << endl;
+
+
+    A::display();
+    B::display();
+
+
+    B::SinhVien sv1;
+    sv1.setName("Trung");
+    sv1.display();
+    return 0;
+}
+```
+
+📝 Chuỗi "Trung 21": nằm ở rdata (data read-only) hoặc text tùy compiler.
+
+📝 char *name: biến con trỏ toàn cục, đã khởi tạo nên lưu ở data.
+
+📝 string name: một biến cục bộ trong mỗi đối tượng SinhVien. Khi một đối tượng SinhVien được tạo, vùng nhớ cho name sẽ được cấp phát trong:
+
+- stack: nếu đối tượng SinhVien được khai báo tĩnh hoặc cục bộ trong một hàm.
+- Heap: nếu đối tượng SinhVien được cấp phát động bằng new.
+
+📝 int id: Tương tự name, biến id là biến thành viên non-static của class, nên sẽ được lưu trong stack hoặc heap tùy vào cách cấp phát đối tượng SinhVien.
+
+📝 static int _ID: biến static cục bộ trong constructor SinhVien. Biến static cục bộ được lưu trữ trong data segment và tồn tại suốt thời gian chạy của chương trình.
+
+
+</p>
+</details>
+
+<details><summary><b>7.2. Từ khóa <b>using</b> trong namespace</b></summary>
+<p>
+
+- Từ khóa using cho phép bạn khai báo namespace để sử dụng các thành viên trong namespace mà không cần phải sử dụng toán tử '::' mỗi khi truy cập.
+- Chỉ sử dụng using namespace khi member muốn truy cập đến là duy nhất.
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+
+using namespace std;
+
+namespace A{
+    char *name = (char*)"Trung 20";
+}
+
+namespace B{
+    char *name = (char*)"Trung 21";
+}
+
+using namespace A;
+
+// using namespace B; // error: tham chiếu không rõ ràng
+
+int main(int argc, char const *argv[])
+{
+    cout << "Name: " << name << endl;
+    cout << "Name: " << B::name << endl;
+    return 0;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>7.3. Namespace lồng nhau</b></summary>
+<p>
+
+- C++ cho phép tạo các namespace lồng nhau, nghĩa là một namespace có thể chứa một namespace khác bên trong nó.
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+
+using namespace std;
+
+namespace A{
+    char *name = (char*)"Trung 20";
+
+    namespace C{
+        char *str = (char*)"Hoang";
+    }
+}
+
+namespace B{
+    char *name = (char*)"Trung 21";
+}
+
+using namespace A::C;
+
+int main(int argc, char const *argv[])
+{
+    cout << "Name: " << A::name << endl;
+    cout << "Name: " << B::name << endl;
+    cout << "Name: " << A::C::str << endl;
+
+    str = (char*)"Hello World";
+    cout << "Name: " << str << endl;
+    return 0;
+}
+```
+
+</p>
+</details>
+
+<details><summary><b>7.4. Namespace mở rộng</b></summary>
+<p>
+
+- Namespace có thể được mở rộng bằng cách khai báo nhiều lần cùng một tên namespace trong các phần khác nhau của chương trình. Các khai báo này sẽ được trình biên dịch ghép lại thành một namespace duy nhất.
+
+💻 **Ví dụ:**
+
+**File lcd1.hpp**
+```cpp
+#ifndef _LCD1_HPP
+#define _LCD1_HPP
+
+namespace LCD{
+    int temp;
+
+    class lcd{
+        private:
+
+        public:
+            lcd(/* args */);
+            ~lcd();
+    };
+
+    lcd::lcd(){}
+
+    lcd::~lcd(){}
+}
+
+#endif
+```
+
+**File lcd2.hpp**
+```cpp
+#ifndef _LCD2_HPP
+#define _LCD2_HPP
+
+namespace LCD{
+    char *text;
+}
+
+#endif
+```
+
+**File main.cpp**
+```cpp
+#include <iostream>
+#include "lcd1.hpp"
+#include "lcd2.hpp"
+
+using namespace std;
+
+int main(int argc, char const *argv[])
+{
+    LCD::lcd;
+    LCD::temp;
+    LCD::text;
+    return 0;
+}
+
+```
+
+</p>
+</details>
+
+<details><summary><b>7.5. Namespace tiêu chuẩn (std)</b></summary>
+<p>
+
+- Một trong những namespace quan trọng và phổ biến nhất trong C++ là std. Tất cả các thành phần của thư viện chuẩn C++ (như cout, cin, vector, string) đều được định nghĩa bên trong namespace std.
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+
+using namespace std;
+
+namespace std{
+    struct{
+        int x;
+        int y;
+    } point;
+
+    void display(){
+        cout << "x = " << point.x << endl;
+        cout << "y = " << point.y << endl;
+    }
+}
+
+int main(int argc, char const *argv[])
+{
+    std::cout << "Hello world!" << std::endl;
+
+    cout << "Hello world!" << endl;
+   
+    std::point.x = 10;
+    std::point.y = 20;
+    std::display();
+
+    return 0;
+}
+```
+
+</p>
+</details>
+
 </p>
 </details>
 
@@ -6313,12 +7114,348 @@ int main(int argc, char const *argv[]){
 <details><summary><b>8. Standard Template Library (STL)/b></summary>
 <p>
 
+<details><summary><b>8.1. Khái niệm/b></summary>
+<p>
+
+STL là một thư viện trong ngôn ngữ lập trình C++ cung cấp một tập hợp các template classes và functions để thực hiện nhiều loại cấu trúc dữ liệu và các thuật toán phổ biến. STL đã trở thành một phần quan trọng của ngôn ngữ C++ và làm cho việc lập trình trở nên mạnh mẽ, linh hoạt và hiệu quả.
+
+Một số thành phần chính của STL:
+
+- Container
+- Iterator
+- Algorithms
+- Functor
+
+</p>
+</details>
+
+<details><summary><b>8.2. Vector/b></summary>
+<p>
+
+- Là một trong những container quan trọng nhất trong STL.
+- Bản chất của vector là một class template. Nó cung cấp một mảng động với khả năng thay đổi kích thước một cách linh hoạt.
+- Có thể truy cập các phần tử của mảng bằng cách sử dụng chỉ số.
+- Có thể chèn hoặc xóa bất kỳ phần tử nào trong mảng.
+- Một số method của vector:
+
++ **at()**: truy cập để đọc hoặc thay đổi giá trị phần tử của vector.
++ **size()**: trả về kích thước của vector.
++ **resize()**: thay đổi kích thước của vector.
++ **begin()**: Trả về một iterator trỏ đến địa chỉ phần tử đầu tiên của vector.
++ **end()**: Trả về một iterator trỏ đến địa chỉ sau phần tử cuối cùng của vector.
++ **push_back()**: thêm phần tử vào vị trí cuối của vector.
++ **pop_back()**: xóa phần tử ở vị trí cuối của vector.
++ **insert()**: thêm phần tử vào vị trí bất kỳ.
++ **erase()**: xoá phần tử ở ví trí bất kỳ hoặc xóa các phần tử trong phạm vi được chỉ định.
++ **clear()**: xóa toàn bộ phần tử của vector (thu hồi tất cả địa chỉ).
+
+<br>
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    // Khởi tạo vector bằng danh sách khởi tạo {}
+    vector<int> vec = {1, 2, 3, 4, 5};
+
+    // Thêm phần tử vào cuối vector bằng push_back
+    vec.push_back(6);
+    vec.push_back(7);
+
+    // Thay đổi kích thước của vector với resize
+    vec.resize(10); // Tăng kích thước vector lên 10 phần tử, các phần tử mới được khởi tạo với 0
+    vec.at(8) = 50; // ghi giá trị mới
+    vec.at(9) = 25;
+
+    // In vector sau khi resize bằng vòng lặp for cải tiến và phương thức at()
+    cout << "Vector sau khi resize: ";
+    for (auto item : vec) {
+        cout << item << " ";
+    }
+    cout << endl;
+
+    // Thêm phần tử vào vị trí thứ 3 (sau phần tử thứ 2) bằng insert
+    vec.insert(vec.begin() + 2, 99);
+
+    // Thêm một phần tử khác vào vị trí thứ 5
+    vec.insert(vec.begin() + 4, 88);
+
+    // Xóa phần tử thứ 4 (sau phần tử đầu tiên thêm vào) bằng erase
+    vec.erase(vec.begin() + 3);
+
+    // Xóa thêm một phần tử khác tại vị trí thứ 6
+    vec.erase(vec.begin() + 5);
+
+    // Sử dụng pop_back() để xóa phần tử cuối cùng
+    vec.pop_back();
+
+    // In vector sau khi sử dụng insert, erase, và pop_back, sử dụng iterator
+    cout << "Vector sau khi thêm, xóa và pop_back: ";
+    for (vector<int>::iterator it = vec.begin(); it != vec.end(); ++it) {
+        cout << *it << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>8.3. List/b></summary>
+<p>
+
+- Triển khai dưới dạng danh sách liên kết hai chiều (linked list), nghĩa là gồm những nodes có địa chỉ ngẫu nhiên liên kết với nhau.
+- Chỉ cỏ thể truy cập các phần tử một cách tuần tự (không hỗ trợ truy cập ngẫu nhiên).
+- Có thể chèn/xóa ở bất kỳ vị trí nào trong danh sách.
+- Một số method của list:
+
++ **size()**: trả về kích thước của list hay số lượng node trong list.
++ **begin()**: Trả về iterator trỏ đến địa chỉ node đầu tiên của list.
++ **end()**: Trả về iterator trỏ đến địa chỉ node cuối cùng của list.
++ **push_back()**: thêm node vào vị trí cuối của list.
++ **push_front()**: thêm node vào vị trí đầu của list.
++ **pop_back()**: xóa node ở vị trí cuối của list.
++ **pop_front()**: xóa node ở vị trí đầu của list.
++ **insert()**: thêm node ở vị trí bất kỳ
++ **erase()**: xoá node ở ví trí bất kỳ hoặc xóa các node trong phạm vi được chỉ định.
++ **remove()**: Xóa các node với giá trị được chỉ định.
+
+<br>
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+#include <list>
+
+using namespace std;
+
+int main() {
+    // Khởi tạo list bằng danh sách khởi tạo {}
+    list<int> lst = {1, 2, 3, 4, 5};
+
+    // Thêm phần tử vào cuối list bằng push_back
+    lst.push_back(6);
+    lst.push_back(7);
+
+    // Thêm phần tử vào đầu list bằng push_front
+    lst.push_front(0);
+    lst.push_front(-1);
+
+    // Thay đổi kích thước của list bằng resize
+    lst.resize(12, 0); // Tăng kích thước list lên 12 phần tử, các phần tử mới được khởi tạo với 0
+
+    list<int>::iterator it;
+
+    // In list sau khi resize bằng vòng lặp for cải tiến
+    cout << "List sau khi push_front và resize: ";
+    for (auto it = lst.begin(); it != lst.end(); ++it) {
+        cout << *it << " ";
+    }
+    cout << endl;
+
+    // Thêm phần tử vào vị trí thứ 3 (sau phần tử thứ 2) bằng insert
+    it = lst.begin();
+    for (int i = 0; i < 2; ++i) {
+        ++it;
+    }
+    lst.insert(it, 99);
+
+    // Thêm một phần tử khác vào vị trí thứ 5
+    it = lst.begin();
+    for (int i = 0; i < 4; ++i) {
+        ++it;
+    }
+    lst.insert(it, 88);
+
+    // Xóa phần tử thứ 4 (sau phần tử đầu tiên thêm vào) bằng erase
+    it = lst.begin();
+    for (int i = 0; i < 3; ++i) {
+        ++it;
+    }
+    lst.erase(it);
+
+    // Xóa thêm một phần tử khác tại vị trí thứ 6
+    it = lst.begin();
+    for (int i = 0; i < 5; ++i) {
+        ++it;
+    }
+    lst.erase(it);
+
+    // Sử dụng pop_back() để xóa phần tử cuối cùng
+    lst.pop_back();
+
+    // Sử dụng pop_front() để xóa phần tử đầu tiên
+    lst.pop_front();
+
+    // Kiểm tra list có rỗng không bằng empty()
+    if (lst.empty()) {
+        cout << "List hiện tại rỗng." << endl;
+    } else {
+        cout << "List sau khi thêm, xóa, pop_back và pop_front: ";
+        for (auto it = lst.begin(); it != lst.end(); ++it) {
+            cout << *it << " ";
+        }
+        cout << endl;
+    }
+
+    return 0;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>8.4. Map/b></summary>
+<p>
+
+- Cung cấp một cấu trúc dữ liệu ánh xạ key – value, trong đó value giữa các object có thể giống nhau nhưng key là duy nhất trong map, nếu có 2 value cùng key thì lấy key và value sau cùng.
+- Có thể thêm phần tử mới vào map bằng cách sử dụng operator [] hoặc hàm insert(). Để xóa phần tử, bạn có thể sử dụng hàm erase().
+- Có thể sử dụng iterator để duyệt qua các phần tử của map.
+
+<br>
+
+💻 **Ví dụ 1:**
+```cpp
+#include <iostream>
+#include <map>
+
+using namespace std;
+
+int main(int argc, char const *argv[]){    
+    map<int, string> array; // key: int, value: string
+
+    array[1] = "Hoang";
+    array[2] = "Tuan";
+    array[3] = "Anh";
+
+    for (auto item : array){
+        cout << "key: " << item.first << " - value: " << item.second << endl; 
+    }
+
+    return 0;
+}
+```
+
+<br>
+
+💻 **Ví dụ 2:**
+```cpp
+#include <iostream>
+#include <map>
+#include <string>
+
+using namespace std;
+
+int main(int argc, char const *argv[]){
+    map<string, int> myMap;
+
+    // Thêm phần tử vào map
+    myMap["one"] = 1;
+    myMap["two"] = 2;
+    myMap["three"] = 3;
+
+    for (auto item : myMap){
+        cout << "Key: " << item.first << " , " << "Value: " << item.second << endl;
+    }
+
+    cout << "---------------" << endl;
+
+    map<string, int> ::iterator it; // it = myMap.begin()
+
+    // myMap.insert(make_pair("four", 4));
+    myMap.insert({"four", 4});
+    myMap.erase("one");
+
+    for (it = myMap.begin(); it != myMap.end(); it++){
+        cout << "Key: " << (*it).first << " , " << "Value: " << (*it).second << endl;
+    }
+
+    return 0;
+}
+```
+
+<br>
+
+💻 **Ví dụ 3:**
+```cpp
+#include <iostream>
+#include <map>
+#include <string>
+
+using namespace std;
+
+typedef struct{
+    string ten;
+    int    tuoi;
+    string lop;
+} SinhVien;
+
+int main(int argc, char const *argv[]){
+    map<string, SinhVien> Database = {
+        {
+            "SV100", {
+                "Hoang",
+                20,
+                "DDT"
+            }
+        },
+        {
+            "SV101", {
+                "Tuan",
+                21,
+                "CDT"
+            }
+        },
+        {
+            "SV102", {
+                "Anh",
+                22,
+                "KTMT"
+            }
+        }
+    };
+
+    for (auto item : Database){
+        cout << "ID: " << item.first << " - Ten: " << item.second.ten << " - Tuoi: " << item.second.tuoi << " - Lop: " << item.second.lop << endl;
+    }
+    return 0;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>8.5. Iterator/b></summary>
+<p>
+
+- Iterator là một đối tượng đại diện cho vị trí trong container và cho phép duyệt qua các phần tử của container (như std::vector, std::list, std::map, v.v.). Chúng có thể được xem là một công cụ để truy cập tuần tự các phần tử mà không cần biết cấu trúc nội bộ của container. Iterator sẽ lưu địa chỉ đầu tiên của list và cho phép duyệt qua từng phần tử.
+- Iterator là một class, bên trong quản lý một con trỏ. Con trỏ này là thành phần giúp iterator biết được nó đang trỏ tới phần tử nào trong container. Con trỏ này lưu trữ địa chỉ của phần tử đầu tiên trong vector hay node đầu tiên trong list, và tử đó duyệt qua từng phần tử.
+- Khi bạn muốn in ra địa chỉ mà một iterator đang trỏ tới, bạn cần sử dụng &(*it).
+
++ *it: (*) là toán tử truy cập giá trị đã được định nghĩa lại (overload) bên trong iterator.
++ &(*it): lấy địa chỉ của giá trị mà iterator it trỏ tới.
+
+- Các thư viện như std::vector, std::list, và nhiều container khác trong C++ Standard Library đều định nghĩa một class iterator riêng bên trong chúng. Điều này giúp mỗi container có một loại iterator phù hợp với cách tổ chức dữ liệu và cách duyệt qua các phần tử của nó.
+
+
 </p>
 </details>
 
 <br>
 
-<details><summary><b>9. Design Patterns</b></summary>
+<details><summary><b>9. Lambda/b></summary>
 <p>
 
 </p>
@@ -6326,16 +7463,1331 @@ int main(int argc, char const *argv[]){
 
 <br>
 
-<details><summary><b>10. Smart Pointer</b></summary>
+<details><summary><b>10. Design Patterns</b></summary>
 <p>
+
+<details><summary><b>10.1. Khái niệm</b></summary>
+<p>
+
+Design Patterns là các giải pháp tổng quát cho các vấn đề phổ biến trong phát triển phần mềm. Chúng là một dạng "công thức" giúp các lập trình viên xử lý các tình huống thường gặp trong quá trình thiết kế.
+
+Design Patterns không phải là ngôn ngữ cụ thể nào cả. Nó có thể thực hiện được ở phần lớn các ngôn ngữ lập trình, chẳng hạn như C/C++, C#, Java,...
+
+Design Patterns không phải là ngôn ngữ cụ thể nào cả. Nó có thể thực hiện được ở phần lớn các ngôn ngữ lập trình, chẳng hạn như Java, C#, thậm chí là Javascript hay bất kỳ ngôn ngữ lập trình nào khác.
+
+Design Patterns được chia thành 3 nhóm chính:
+
+- Creational Pattern (mẫu khởi tạo): Quản lý việc khởi tạo đối tượng, ví dụ: **Singleton**, **Factory**, Prototype,...
+- Behavioral Pattern (mẫu tương tác): Xác định cách các đối tượng tương tác với nhau ví dụ: **Observer**, **MVP**, Iterator,...
+- Structural Pattern (mẫu cấu trúc): Tổ chức cấu trúc của các lớp và đối tượng, ví dụ: **Decorator**, Adapter, Composite,...
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>10.2. Singleton Pattern</b></summary>
+<p>
+
+- Singleton là một mẫu thiết kế thuộc nhóm Creational (mẫu khởi tạo), nó đảm bảo rằng một lớp chỉ có duy nhất một instance và cung cấp một điểm truy cập toàn cục đến instance này.
+- Singleton thường sử dụng cho những hệ thống chỉ cần một phiên bản duy nhất như: kết nối cơ sở dữ liệu, bộ nhớ đệm (cache), logger để ghi log, hoặc cấu hình hệ thống.
+
+<br>
+
+💻
+```cpp
+#include <iostream>
+
+void gpioInit(){
+    std::cout << "GPIO Initialized" << std::endl;
+}
+
+void gpioSetPin(int pin, bool value){
+    std::cout << "Pin " << pin << " set to " << (value ? "HIGH" : "LOW") << std::endl;
+}
+
+void gpioReadPin(int pin){
+    std::cout << "Reading Pin " << pin << std::endl;
+}
+
+class GPIOManager{
+    private:
+        GPIOManager(){}
+
+        static GPIOManager* instance;
+
+        void init(){
+            gpioInit();
+        }
+
+    public:
+        static GPIOManager *getInstance(){
+            if(!instance){
+                instance = new GPIOManager(); // 0xc8
+                instance->init();
+                // bổ sung thêm tính năng
+            }
+            return instance;
+        }
+        
+        void setPin(int pin, bool value){
+            gpioSetPin(pin, value);
+        }
+
+        void readPin(int pin){
+            gpioReadPin(pin);
+        }
+};
+
+GPIOManager* GPIOManager::instance = nullptr; // 0xc8 : địa chỉ cố định
+
+int main(int argc, char const *argv[])
+{
+    GPIOManager* gpioManager1 = GPIOManager::getInstance();
+
+    gpioManager1->setPin(1, true);
+
+    gpioManager1->readPin(2);
+
+    GPIOManager* gpioManager2 = GPIOManager::getInstance();
+
+    return 0;
+}
+```
+📝 gpioManager1 và gpioManager2 đều cùng trỏ đến cùng một đối tượng ``` instance ``` có địa chỉ là 0xc8, được gọi thông qua method ``` getIntance() ```, nghĩa là chúng đều cùng trỏ đến 1 vùng làm việc chung.
+
+📝 Constructor ``` GPIOManager() ``` nằm ở private để không cho phép khởi tạo object thông thường.
+
+📝 ``` static GPIOManager* instance ```: con trỏ instance thuộc class GPIOManager và phải được khởi tạo trước vì là static trong class: ``` GPIOManager* GPIOManager::instance = nullptr ```, khởi tạo ban đầu là con trỏ NULL.
+
+📝 Khi ``` gpioManager1 ``` cấu hình Pin hay đọc giá trị Pin nào thì ``` gpioManager2 ``` cũng sẽ thực hiện tương tự.
+
+<br>
+
+💻
+```cpp
+#include <iostream>
+#include "stm32f10x.h"  
+
+class UART{
+    private:
+        static UART* instance;  
+        
+        UART(){
+            initUART();
+        }
+
+        void initUART(){
+            RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
+            USART_InitTypeDef USART_InitStructure;
+
+            USART_InitStructure.USART_BaudRate = 115200;
+            USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+            USART_InitStructure.USART_StopBits = USART_StopBits_1;
+            USART_InitStructure.USART_Parity = USART_Parity_No;
+            USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+            USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+
+            USART_Init(USART1, &USART_InitStructure);
+            USART_Cmd(USART1, ENABLE);
+        }
+
+    public:
+        static UART* getInstance(){
+            if (instance == nullptr){
+                instance = new UART();  // Tạo instance nếu chưa có
+            }
+            return instance;
+        }
+
+        void sendData(uint8_t data){
+            while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
+            USART_SendData(USART1, data);
+        }
+
+        uint8_t receiveData(){
+            while (USART_GetFlagStatus(USART1, USART_FLAG_RXNE) == RESET);
+            return USART_ReceiveData(USART1);
+        }
+};
+
+UART* UART::instance = nullptr;
+
+int main()
+{
+    UART* uart1 = UART::getInstance();
+
+    // Gửi một ký tự qua UART
+    uart1->sendData('H');
+
+    UART* uart2 = UART::getInstance();
+
+    // Nhận một ký tự từ UART
+    uint8_t received = uart2->receiveData();
+
+    while (1) {
+        // Thực hiện công việc liên quan khác
+    }
+}
+```
+📝 uart1 và uart2 cùng trỏ đến một đối tượng ``` instance ``` thông qua method ``` getInstance ``` nên sẽ có chung cấu hình, điều này đảm bảo rằng cấu hình UART là nhất quán trong toàn bộ hệ thống.
+
+<br>
+
+**Ứng dụng**:
+
+- Quản lý tài nguyên hệ thống (cơ sở dữ liệu, tập tin, máy in).
+- Các bộ nhớ đệm (cache), quản lý trạng thái ứng dụng.
+- Đăng ký logger cho toàn bộ ứng dụng.
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>10.3. Observer Pattern</b></summary>
+<p>
+
+Observer là một mẫu thiết kế thuộc nhóm Behavioral, cho phép một đối tượng (gọi là Subject) thông báo cho nhiều đối tượng khác (gọi là Observer) về sự thay đổi trạng thái mà không cần biết chi tiết về các đối tượng đó.
+
+**Đặc điểm chính của Observer Pattern**:
+
+1. **Mối quan hệ của Subject và Observer**:
+
+- Subject giữ một danh sách các Observer. Các Observer đăng ký nhận thông báo từ Subject khi có sự thay đổi trạng thái. Observer có thể thêm, xoá hoặc cập nhật trong danh sách này.
+
+2. **Tự động thông báo (Push Notification)**:
+
+- Khi trạng thái của Subject thay đổi, nó sẽ tự động thông báo cho tất cả các Observer đã đăng ký. Các Observer không cần chủ động kiểm tra trạng thái của Subject mà sẽ nhận thông báo ngay khi có thay đổi.
+
+3. **Tính linh hoạt và mở rộng**:
+
+- Observer Pattern cho phép dễ dàng thêm hoặc xóa các Observer mà không cần thay đổi Subject hoặc Observer có thể dễ dàng ngừng nhận thông báo từ Subject bằng cách hủy đăng ký, giúp kiểm soát tốt hơn việc quản lý tài nguyên và sự kiện trong hệ thống.
+
+4. **Giảm sự phụ thuộc chặt chẽ**:
+
+- Subject không cần biết chính xác về các Observer mà nó quản lý, chỉ cần biết rằng chúng tuân theo một giao diện chung để nhận thông báo. Điều này giúp giảm sự phụ thuộc chặt chẽ giữa các đối tượng và làm cho mã dễ bảo trì hơn.
+
+5. **Nhiều Observer có thể theo dõi một hoặc nhiều Subject**:
+
+- Nhiều Observer có thể cùng theo dõi một Subject. Điều này cho phép cùng một sự kiện trong Subject có thể ảnh hưởng đến nhiều đối tượng khác nhau.
+- Một Observer có thể đăng ký để nhận thông báo từ nhiều Subject khác nhau, và mỗi Subject sẽ thông báo cho Observer khi có sự thay đổi liên quan.
+
+<br>
+
+💻
+```cpp
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+// Interface for observers (display, logger, etc.)
+class Observer{
+    public:
+        virtual void update(float temperature, float humidity, float light) = 0;
+};
+
+// Subject (SensorManager) holds the state and notifies observers
+class SensorManager{
+        float temperature;
+        float humidity;
+        float light;
+        vector<Observer*> observers;
+
+    public:
+        void registerObserver(Observer* observer){
+            observers.push_back(observer);
+        }
+
+        void removeObserver(Observer* observer){
+            observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
+        }
+
+        void notifyObservers(){
+            for (auto observer : observers){
+                observer->update(temperature, humidity, light);
+            }
+        }
+
+        void setMeasurements(float temp, float hum, float lightLvl) {
+            temperature = temp;
+            humidity = hum;
+            light = lightLvl;
+            notifyObservers();  // Push notification to all registered observers
+        }
+};
+
+// Another Subject class
+class WeatherStation{
+        float windSpeed;
+        vector<Observer*> observers;
+
+    public:
+        void registerObserver(Observer* observer){
+            observers.push_back(observer);
+        }
+
+        void removeObserver(Observer* observer){
+            observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
+        }
+
+        void notifyObservers(){
+            for (auto observer : observers){
+                observer->update(windSpeed, 0.0, 0.0);  // update for wind speed only
+            }
+        }
+
+        void setWindSpeed(float speed){
+            windSpeed = speed;
+            notifyObservers();  // Notify all observers of wind speed change
+        }
+};
+
+// Display component (an observer)
+class Display : public Observer {
+    public:
+        void update(float temperature, float humidity, float light) override {
+            cout << "Display: Temperature: " << temperature 
+                 << ", Humidity: " << humidity 
+                 << ", Light: " << light << endl;
+        }
+};
+
+// Logger component (an observer)
+class Logger : public Observer {
+    public:
+        void update(float temperature, float humidity, float light) override {
+            cout << "Logging data... Temp: " << temperature 
+                 << ", Humidity: " << humidity 
+                 << ", Light: " << light << endl;
+        }
+};
+
+int main() 
+{
+    Display display;
+    Logger  logger;
+
+    SensorManager  sensorManager;
+    WeatherStation weatherStation;
+
+    // register observers to SensorManager
+    sensorManager.registerObserver(&display);
+    sensorManager.registerObserver(&logger);
+
+    // register observers to WeatherManager
+    weatherStation.registerObserver(&display);
+    weatherStation.registerObserver(&logger);
+
+    // simulate sensor data update
+    sensorManager.setMeasurements(25.0, 60.0, 700.0);
+    sensorManager.setMeasurements(26.0, 65.0, 800.0);
+    cout << "\n";
+
+    // simulate wind speed update
+    weatherStation.setWindSpeed(15.0);
+    weatherStation.setWindSpeed(25.4);
+    cout << "\n";
+
+    // Remove Logger from SensorManager notifications
+    sensorManager.removeObserver(&logger);
+
+    // Update sensor data again to see only Display receiving notifications
+    sensorManager.setMeasurements(27.0, 70.0, 900.0);
+
+    return 0;
+}
+```
+**Kết quả**:
+```cpp
+Display: Temperature: 25, Humidity: 60, Light: 700
+Logging data... Temp: 25, Humidity: 60, Light: 700
+Display: Temperature: 26, Humidity: 65, Light: 800
+Logging data... Temp: 26, Humidity: 65, Light: 800
+
+Display: Temperature: 15, Humidity: 0, Light: 0
+Logging data... Temp: 15, Humidity: 0, Light: 0
+Display: Temperature: 25.4, Humidity: 0, Light: 0
+Logging data... Temp: 25.4, Humidity: 0, Light: 0
+
+Display: Temperature: 27, Humidity: 70, Light: 900
+```
+📝 Các property ``` temperature, humidity, light ``` và ``` vector<Observer*> observers ``` mặc định nằm ở pham vi truy cập private.
+
+📝 **SensorManager** và **WeatherStation** (Subject) quản lý danh sách các **Observer**. Các Observer có thể đăng ký thông qua phương thức ``` registerObserver() ``` và có thể bị xóa bằng ``` removeObserver() ```. Điều này đảm bảo việc quản lý danh sách Observer một cách linh hoạt.
+
+📝 Khi trạng thái thay đổi trong SensorManager (ví dụ: nhiệt độ, độ ẩm, ánh sáng), tất cả các Observer được thông báo qua phương thức ``` notifyObservers() ``` mà không cần chúng chủ động kiểm tra.
+
+📝 Bất kỳ Observer nào cũng có thể dễ dàng được thêm hoặc xóa khỏi Subject mà không cần thay đổi cấu trúc của Subject hoặc Observer. Ví dụ: Sau khi Logger được xóa khỏi danh sách Observer của SensorManager, chỉ có Display nhận được thông báo khi có sự thay đổi.
+
+📝 SensorManager không cần biết chi tiết về Display hay Logger, chỉ cần biết rằng chúng tuân theo giao diện Observer (với việc override method ``` update() ```). Điều này giúp giảm sự phụ thuộc chặt chẽ giữa các đối tượng và tăng khả năng bảo trì.
+
+📝 Display và Logger theo dõi cả SensorManager và WeatherStation. Khi bất kỳ trạng thái nào trong hai Subject này thay đổi, các Observer sẽ nhận được thông báo tương ứng.
+
+<br>
+
+💻
+```cpp
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+// Observer interface
+class ButtonObserver{
+    public:
+        virtual void update(int buttonID, bool state) = 0;
+};
+
+// Subject class - Button
+class Button{
+        int buttonID;
+        bool state;
+        vector<ButtonObserver*> observers;
+
+    public:
+        Button(int id): buttonID(id), state(false){}
+
+        void registerObserver(ButtonObserver* observer){
+            observers.push_back(observer);
+        }
+
+        void notifyObservers(){
+            for (auto observer : observers){
+                observer->update(buttonID, state);
+            }
+        }
+
+        void pressButton(){
+            state = true;
+            notifyObservers();
+        }
+
+        void releaseButton(){
+            state = false;
+            notifyObservers();
+        }
+};
+
+// LED device acting as an observer
+class LED : public ButtonObserver{
+    public:
+        void update(int buttonID, bool state) override {
+            cout << "LED reacts to Button " << buttonID << " being " << (state ? "pressed" : "released") << std::endl;
+        }
+};
+
+// Buzzer device acting as an observer
+class Buzzer : public ButtonObserver{
+    public:
+        void update(int buttonID, bool state) override {
+            cout << "Buzzer reacts to Button " << buttonID << " being " << (state ? "pressed" : "released") << std::endl;
+        }
+};
+
+int main() 
+{
+    Button button1(1);
+    Button button2(2);
+
+    Buzzer buzzer;
+    LED    led;
+
+    // Register observers
+    button1.registerObserver(&led);
+    button1.registerObserver(&buzzer);
+
+    button2.registerObserver(&led);
+
+    // Simulate button presses
+    button1.pressButton();
+    button1.releaseButton();
+    cout << "\n";
+
+    button2.pressButton();
+    button2.releaseButton();
+
+    return 0;
+}
+```
+**Kết quả**:
+```cpp
+LED reacts to Button 1 being pressed
+Buzzer reacts to Button 1 being pressed
+LED reacts to Button 1 being released
+Buzzer reacts to Button 1 being released
+
+LED reacts to Button 2 being pressed
+LED reacts to Button 2 being released
+```
+
+**Ứng dụng**:
+
+- Giao diện đồ họa (cập nhật giao diện khi dữ liệu thay đổi).
+- Hệ thống thông báo (quản lý sự kiện, hệ thống báo lỗi).
+- Trong Automotive, Observer có thể được dùng để phát hiện và thông báo các thay đổi trạng thái của sensor hoặc các mô-đun điều khiển.
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>10.4. Factory Pattern</b></summary>
+<p>
+
+Factory Pattern là một mẫu thiết kế (design pattern) thuộc nhóm creational patterns, cung cấp một cơ chế để tạo ra các đối tượng mà không cần chỉ rõ lớp cụ thể của các đối tượng đó. Thay vì khởi tạo trực tiếp các đối tượng, Factory Pattern sử dụng một phương thức hoặc một lớp trung gian (Factory) để quyết định loại đối tượng nào sẽ được khởi tạo dựa trên tham số đầu vào hoặc logic cụ thể.
+
+Đặc điểm của Factory Pattern:
+
+- **Tính trừu tượng**: Factory Pattern ẩn đi chi tiết về cách các đối tượng được tạo ra, giúp chương trình tách biệt giữa việc khởi tạo đối tượng và việc sử dụng đối tượng đó.
+- **Tính mở rộng**: Factory Pattern giúp hệ thống dễ dàng mở rộng khi cần thêm các lớp con mới mà không làm ảnh hưởng đến mã nguồn hiện có.
+- **Tính linh hoạt**: Khi hệ thống cần thay đổi hoặc thêm mới các đối tượng cụ thể, chúng ta chỉ cần cập nhật factory mà không cần sửa đổi mã nguồn chính.
+- **Giảm sự phụ thuộc**: Factory Pattern giúp mã nguồn giảm sự phụ thuộc vào các lớp cụ thể, từ đó tăng tính module và khả năng tái sử dụng.
+
+<br>
+
+💻
+```cpp
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// Abstract class
+class Sensor{
+    public:
+        virtual void readData() = 0;
+};
+
+// Temperature class
+class TemperatureSensor : public Sensor{
+    public:
+        void readData() override {
+            cout<<"reading temp data: "<<endl;
+        }
+};
+
+// Humidity class
+class HumiditySensor : public Sensor{
+    public:
+        void readData() override {
+            cout<<"reading humidity data: "<<endl;
+        }
+};
+
+// Factory class (Creator)
+class SensorFactory{
+    public:
+        static Sensor* createSensor(const string& sensorType){
+            if(sensorType == "temp"){
+                return new TemperatureSensor();     // trả về đối tượng TemperatureSensor
+            }
+            else if (sensorType == "humi"){
+                return new HumiditySensor();        // trả về đối tượng PressureSensor
+            }
+            else{
+                return nullptr;                     // trả về con trỏ null
+            }
+        }
+};
+
+
+int main(int argc, char const *argv[])
+{
+    Sensor* sensor = SensorFactory::createSensor("humi");
+    sensor->readData();
+    return 0;
+}
+```
+
+📝 **Abstract class** ``` Sensor ```: Đây là lớp cơ sở trừu tượng cho tất cả các loại cảm biến. Lớp này định nghĩa phương thức readData() là phương thức ảo thuần túy (pure virtual), yêu cầu các lớp con phải triển khai nó.
+
+📝  Các lớp con cụ thể như ``` TemperatureSensor ```, ``` PressureSensor ```, và ``` HumiditySensor ``` triển khai phương thức ``` readData() ``` theo cách riêng để đọc dữ liệu từ các cảm biến tương ứng.
+
+📝 **Factory class** ``` SensorFactory ```: Lớp này chứa một phương thức tĩnh ``` createSensor() ``` để tạo và trả về đối tượng cảm biến dựa trên loại cảm biến được chỉ định qua chuỗi ký tự đầu vào. Đây chính là tính trừu tượng vì người dùng chỉ được phép truyền vào tên cảm biến còn quá trình triển khai cảm biến như thế nào đã bị ẩn đi.
+
+📝 Trong hàm main(), ta chỉ cần gọi phương thức ``` SensorFactory::createSensor() ``` và cung cấp loại cảm biến mà ta cần. Factory sẽ trả về đối tượng cảm biến phù hợp mà không cần khởi tạo thủ công từng lớp cụ thể
+
+<br>
+
+Ta có thể thay thế ``` class SensorFactory ``` như sau:
+
+```cpp
+enum class SensorType {
+    TEMPERATURE,
+    PRESSURE,
+    HUMIDITY
+};
+
+class SensorFactory {
+public:
+    // Factory method sử dụng enum
+    static Sensor* createSensor(SensorType type) {
+        switch (type) {
+            case SensorType::TEMPERATURE:
+                return new TemperatureSensor();  // Trả về đối tượng TemperatureSensor
+            case SensorType::PRESSURE:
+                return new PressureSensor();     // Trả về đối tượng PressureSensor
+            case SensorType::HUMIDITY:
+                return new HumiditySensor();     // Trả về đối tượng HumiditySensor
+            default:
+                std::cout << "Invalid sensor type!\n";
+                return nullptr;                  // Trường hợp không hợp lệ
+        }
+    }
+};
+
+int main() 
+{
+    Sensor* sensor = SensorFactory::createSensor(SensorType::PRESSURE);
+
+    if (sensor) {
+        sensor->readData(); // Interact with the sensor
+        delete sensor;      // Clean up memory
+    }
+
+    return 0;
+}
+```
+📝 Enum ``` SensorType ```: sử dụng một enum để đại diện cho các loại cảm biến khác nhau (Temperature, Pressure, Humidity). Điều này giúp giảm thiểu lỗi liên quan đến việc nhập sai chuỗi (string) và làm mã dễ bảo trì hơn.
+
+📝 **Factory Method** ``` createSensor() ```: method này giờ đây nhận tham số kiểu SensorType (enum) thay vì một chuỗi. Dựa trên giá trị của enum, nó khởi tạo và trả về đối tượng cảm biến tương ứng.
+
+📝 Trong hàm ``` main() ```, thay vì sử dụng chuỗi để chỉ định loại cảm biến, ta truyền vào một giá trị của SensorType enum, giúp mã dễ hiểu và tránh lỗi không mong muốn.
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>10.5. Decorator Pattern</b></summary>
+<p>
+
+Decorator Pattern là một mẫu thiết kế thuộc nhóm structural patterns, cho phép thêm các chức năng hoặc hành vi mới cho một đối tượng mà không cần thay đổi cấu trúc của lớp đối tượng đó. Thay vì kế thừa để mở rộng tính năng, Decorator sử dụng sự kết hợp của đối tượng để thêm các hành vi cho đối tượng hiện có.
+
+Đặc điểm của Decorator Pattern:
+
+- **Tính linh hoạt**: Decorator Pattern cho phép thêm hành vi mới vào đối tượng một cách linh hoạt mà không làm thay đổi các đối tượng khác.
+- **Tính mở rộng**: Decorator Pattern cho phép mở rộng tính năng mà không cần thay đổi mã gốc.
+- **Dễ bảo trì**: Bạn có thể dễ dàng bổ sung hoặc thay thế các tính năng bằng cách thay đổi các decorator mà không ảnh hưởng đến các lớp khác.
+- **Giảm sự phức tạp của kế thừa**: Thay vì tạo ra nhiều lớp con để mở rộng hành vi, Decorator Pattern cho phép kết hợp các hành vi một cách linh hoạt bằng cách xếp chồng các decorator.
+
+<br>
+
+💻
+```cpp
+#include <iostream>
+
+using namespace std;
+
+// Base component
+class Sensor{
+    public:
+        virtual void readData() = 0;
+};
+/*
+ * lớp cơ sở (abstract base class) dùng để định nghĩa một giao diện chung cho các loại sensor khác nhau.
+ * Sensor có một phương thức thuần ảo (pure virtual function) tên là readData(). Phương thức này yêu cầu các lớp kế thừa từ Sensor phải cài đặt nó.
+ * Mục đích của lớp Sensor là để đại diện cho các loại cảm biến khác nhau trong hệ thống, có thể là cảm biến nhiệt độ, độ ẩm, áp suất,...
+ */
+
+
+// Concrete component: temperature class
+class TemperatureSensor : public Sensor{
+    public:
+        void readData() override {
+            cout<<"Reading temperature data...\n";
+        }
+};
+/*
+ * Lớp TemperatureSensor kế thừa từ lớp Sensor và cài đặt phương thức readData().
+ * Phương thức readData() trong lớp này sẽ in ra thông báo "Reading temperature data...". Đây là lớp cụ thể đại diện cho cảm biến nhiệt độ, thực hiện hành động đọc dữ liệu nhiệt độ.
+ */
+
+
+// Base Decorator
+class SensorDecorator : public Sensor{
+    protected:
+        Sensor* wrappedSensor;
+
+    public:
+        SensorDecorator(Sensor* sensor) : wrappedSensor(sensor){}
+
+        virtual void readData() override {
+            wrappedSensor->readData();
+        }
+};
+/*
+ * Mục đích của lớp này là cung cấp khả năng mở rộng chức năng cho các lớp cảm biến mà không thay đổi cấu trúc ban đầu của chúng.
+ * Thuộc tính Sensor* wrappedSensor được sử dụng để giữ tham chiếu đến đối tượng Sensor gốc.
+ * Phương thức readData() được định nghĩa để gọi lại phương thức readData() của wrappedSensor, cho phép các lớp con kế thừa lớp SensorDecorator có thể thêm các chức năng bổ sung mà không can thiệp vào logic cơ bản.
+ */
+
+
+// Concrete Decorator: add logging function
+class LoggingSensor : public SensorDecorator{
+    public:
+        LoggingSensor(Sensor* sensor) : SensorDecorator(sensor){}
+
+        void readData() override{
+            SensorDecorator::readData();
+            logData();
+        }
+
+        void logData(){
+            cout << "Logging temperature data...\n";
+            // code to log sensor data
+        }
+};
+/*
+ * Mục đích của lớp này là cung cấp khả năng mở rộng chức năng cho các lớp cảm biến mà không thay đổi cấu trúc ban đầu của chúng.
+ * Thuộc tính Sensor* wrappedSensor được sử dụng để giữ tham chiếu đến đối tượng Sensor gốc.
+ * Phương thức readData() được định nghĩa để gọi lại phương thức readData() của wrappedSensor, cho phép các lớp con kế thừa lớp SensorDecorator có thể thêm các chức năng bổ sung mà không can thiệp vào logic cơ bản.
+ */
+
+
+// Concrete Decorator: add limit check function
+class LimitCheckSensor : public SensorDecorator{
+    public:
+        LimitCheckSensor(Sensor* sensor) : SensorDecorator(sensor){}
+
+        void readData() override{
+            SensorDecorator::readData();
+            checkLimits();
+        }
+
+        void checkLimits(){
+            cout << "Checking temperature limits...\n";
+            // code to check temperature limits
+        }
+};
+
+
+int main(int argc, char const *argv[])
+{
+    // Base sensor object
+    Sensor* tempSensor = new TemperatureSensor();	// 0xc8
+
+    // Adding logging function via decorator
+    tempSensor = new LoggingSensor(tempSensor);		// 0xa1
+
+    // // Adding limit checking function via decorator
+    tempSensor = new LimitCheckSensor(tempSensor);	// 0xf4
+
+    // // Reading data with all added function
+    tempSensor->readData();
+
+    delete tempSensor;
+
+    return 0;
+}
+```
+
+📝 **Base Component** ``` Sensor ```: Đây là giao diện trừu tượng của cảm biến, định nghĩa phương thức readData() mà mọi lớp con phải thực hiện.
+
+📝 **Concrete Component** ``` TemperatureSensor ```: class cảm biến nhiệt độ, thực hiện việc đọc dữ liệu từ cảm biến thực tế.
+
+📝 **Base Decorator** ``` SensorDecorator ```: Đây là lớp trừu tượng cho các decorator, kế thừa từ Sensor và chứa một tham chiếu đến Sensor. Lớp này cho phép các lớp con mở rộng hành vi của đối tượng Sensor được gói bên trong nó.
+
+📝 **Concrete Decorator** ``` LoggingSensorDecorator ``` và ``` LimitCheckSensorDecorator ```: Đây là các lớp decorator cụ thể, chúng mở rộng hành vi của cảm biến bằng cách thêm chức năng ghi log (LoggingSensorDecorator) và kiểm tra giới hạn (LimitCheckSensorDecorator). Mỗi decorator vẫn gọi hàm readData() của cảm biến gốc, nhưng thêm các hành vi bổ sung vào quá trình.
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>10.6. MVP Pattern</b></summary>
+<p>
+
+</p>
+</details>
 
 </p>
 </details>
 
 <br>
 
-<details><summary><b>11. Đa luồng (Thread)</b></summary>
+<details><summary><b>11. Smart Pointer</b></summary>
 <p>
+
+<details><summary><b>11.1. Unique pointer</b></summary>
+<p>
+
+- unique pointer là một smart pointer quản lý bộ nhớ tự động trong C++.
+- unique pointer đảm bảo rằng chỉ có duy nhất một con trỏ sở hữu đối tượng tại một thời điểm (quyền sở hữu độc quyền).
+- Khi unique pointer bị hủy hoặc được gán cho một con trỏ khác, đối tượng mà nó sở hữu sẽ tự động được giải phóng.
+
+💻
+```cpp
+#include <iostream>
+#include <memory>  // Cần thiết để sử dụng smart pointer
+
+using namespace std;
+
+int main() 
+{
+    unique_ptr<int> ptr = make_unique<int>(10);
+    
+    cout << "Value: " << *ptr << endl;
+
+    return 0;
+}
+```
+
+📝 ``` make_unique<int>(10) ```: tạo ra một đối tượng kiểu int với giá trị khởi tạo là 10 và địa chỉ được cấp phát nằm trên vùng nhớ heap, sau đó trả về một con trỏ thông minh ``` unique_ptr ``` trỏ tới đối tượng đó.
+
+📝 ``` unique_ptr<int> ```: chỉ ra rằng unique pointer này sẽ quản lý một đối tượng kiểu **int**.
+
+📝 ``` ptr ```: tên của object thuộc class unique_ptr, nó được tạo ra và sở hữu vùng nhớ vừa được cấp phát. Từ thời điểm này, ptr có trách nhiệm quản lý vùng nhớ của đối tượng kiểu int.
+
+<br>
+
+Những phương thức chính mà ``` std::unique_ptr ``` hỗ trợ:
+
+<b>1. operator*() và operator->()**</b>
+
+- ``` operator*() ```: dereference con trỏ để truy cập giá trị của đối tượng mà **unique_ptr** đang quản lý.
+- ``` operator->() ```: truy cập thành viên của đối tượng mà **unique_ptr** trỏ tới.
+
+
+💻
+```cpp
+#include <iostream>
+#include <memory>  // Cần thiết để sử dụng smart pointer
+
+using namespace std;
+
+class Example{
+    private:
+        int data;
+
+    public:
+        Example(int value): data(value){
+            cout << "Constructor called, data = " << data << endl;
+        }
+
+        ~Example(){
+            cout << "Destructor called, data = " << data << endl;
+        }
+
+        void display(){
+            cout << "Value: " << data << endl;
+        }
+};
+
+int main() 
+{
+    unique_ptr<Example> ptr = make_unique<Example>(10);
+    ptr->display();
+
+    *ptr = 20;
+    (*ptr).display();
+    return 0;
+}
+```
+
+<br>
+
+<b>2. get()</b>
+
+- Trả về con trỏ thô (raw pointer) đến đối tượng mà **unique_ptr** đang quản lý.
+-  Con trỏ thô trả về bởi **get()** không chuyển quyền sở hữu, tức là đối tượng vẫn được quản lý bởi **unique_ptr**.
+
+💻
+```cpp
+#include <iostream>
+#include <memory>  // Cần thiết để sử dụng smart pointer
+
+using namespace std;
+
+class Example{
+    private:
+        int data;
+
+    public:
+        Example(int value): data(value){
+            cout << "Constructor called, data = " << data << endl;
+        }
+
+        ~Example(){
+            cout << "Destructor called, data = " << data << endl;
+        }
+
+        void display(){
+            cout << "Value: " << data << endl;
+        }
+};
+
+int main() 
+{
+    unique_ptr<Example> ptr;
+    ptr = make_unique<Example>(30);
+
+    Example *rawPtr2 = ptr.get();   
+    rawPtr2->display();
+    return 0;
+}
+```
+
+<br>
+
+<b>3. release()</b>
+
+- Giải phóng quyền sở hữu đối với đối tượng mà unique_ptr đang quản lý (``` unique_ptr ``` giờ đây trở thành ``` con trỏ null ```(nullptr)) và trả về con trỏ thô (raw pointer) đến đối tượng đó.
+- Sau khi gọi ``` release() ```, unique_ptr không còn quản lý đối tượng nữa, và trách nhiệm giải phóng bộ nhớ thuộc về người gọi (giải phóng thủ công với ``` delete ```).
+
+💻
+```cpp
+#include <iostream>
+#include <memory>  // Cần thiết để sử dụng smart pointer
+
+using namespace std;
+
+class Example{
+    private:
+        int data;
+
+    public:
+        Example(int value): data(value){
+            cout << "Constructor called, data = " << data << endl;
+        }
+
+        ~Example(){
+            cout << "Destructor called, data = " << data << endl;
+        }
+
+        void display(){
+            cout << "Value: " << data << endl;
+        }
+};
+
+int main() 
+{
+    unique_ptr<Example> ptr = make_unique<Example>(30);
+
+    Example *rawPtr = ptr.release();
+    if (!ptr){
+        cout << "ptr đã bị tách quyền sở hữu và trở thành nullptr\n";
+    }
+    rawPtr->display();  
+    delete rawPtr;      
+    return 0;
+}
+```
+
+<br>
+
+<b>4. reset()</b>
+
+- Giải phóng đối tượng mà unique_ptr đang quản lý (nếu có) và có thể quản lý một đối tượng mới (nếu được cung cấp).
+- Nếu không cung cấp đối tượng mới, reset() sẽ khiến unique_ptr trở thành nullptr.
+
+💻
+```cpp
+#include <iostream>
+#include <memory>  // Cần thiết để sử dụng smart pointer
+
+using namespace std;
+
+class Example{
+    private:
+        int data;
+
+    public:
+        Example(int value): data(value){
+            cout << "Constructor called, data = " << data << endl;
+        }
+
+        ~Example(){
+            cout << "Destructor called, data = " << data << endl;
+        }
+
+        void display(){
+            cout << "Value: " << data << endl;
+        }
+};
+
+int main() 
+{
+    unique_ptr<Example> ptr = make_unique<Example>(30);
+
+    ptr.reset(new Example(20)); // ptr quản lý đối tượng mới
+    ptr->display();
+
+    ptr.reset();
+    if (!ptr){
+           cout << "ptr trở thành nullptr\n";
+    }
+    return 0;
+}
+```
+
+<br>
+
+<b>5. swap()</b>
+
+Hoán đổi (swap) nội dung của hai unique_ptr với nhau, tức là đổi đối tượng mà hai unique_ptr quản lý.
+
+💻
+```cpp
+#include <iostream>
+#include <memory>  // Cần thiết để sử dụng smart pointer
+
+using namespace std;
+
+class Example{
+    private:
+        int data;
+
+    public:
+        Example(int value): data(value){
+            cout << "Constructor called, data = " << data << endl;
+        }
+
+        ~Example(){
+            cout << "Destructor called, data = " << data << endl;
+        }
+
+        void display(){
+            cout << "Value: " << data << endl;
+        }
+};
+
+int main() 
+{
+    unique_ptr<Example> ptr1 = make_unique<Example>(30);
+    unique_ptr<Example> ptr2 = make_unique<Example>(60);
+    ptr1.swap(ptr2);
+
+    ptr1->display();
+    ptr2->display();
+    return 0;
+}
+```
+
+<br>
+
+<b>6. move()</b>
+
+Chuyển nhượng quyền sở hữu tài nguyên (move semantics). Sau khi chuyển nhượng (move), con trỏ gốc sẽ trở thành nullptr và quyền sở hữu tài nguyên được chuyển sang **unique_ptr** mới.
+
+💻
+```cpp
+#include <iostream>
+#include <memory>  // Cần thiết để sử dụng smart pointer
+
+using namespace std;
+
+class Example{
+    private:
+        int data;
+
+    public:
+        Example(int value): data(value){
+            cout << "Constructor called, data = " << data << endl;
+        }
+
+        ~Example(){
+            cout << "Destructor called, data = " << data << endl;
+        }
+
+        void display(){
+            cout << "Value: " << data << endl;
+        }
+};
+
+int main() 
+{
+    unique_ptr<Example> ptr1 = make_unique<Example>(30);
+    unique_ptr<Example> newPtr = move(ptr); // chuyển quyền sở hữu từ ptr sang newPtr
+
+    if (!ptr){
+        cout << "ptr đã trở thành nullptr sau khi chuyển quyền sở hữu\n";
+    }
+    newPtr->display();  // newPtr giờ sở hữu đối tượng
+    return 0;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>11.2. Shared pointer</b></summary>
+<p>
+
+- shared pointer (shared_ptr) là một smart pointer hỗ trợ chia sẻ quyền sở hữu đối với một đối tượng.
+- Nhiều shared_ptr có thể cùng sở hữu một đối tượng. Đối tượng chỉ được giải phóng khi không còn shared_ptr nào sở hữu nó (đếm tham chiếu đạt giá trị 0).
+
+<br>
+
+Những phương thức chính mà ``` std::shared_ptr ``` hỗ trợ:
+
+<b>1. operator*() và operator->()</b>: tương tự ``` unique_ptr ```
+
+<b>2. get()</b>: tương tự ``` unique_ptr ```
+
+<b>3. reset()</b>: tương tự ``` unique_ptr ```
+
+<b>4. swap()</b>: tương tự ``` unique_ptr ```
+
+<b>5. operator=</b>
+
+Sao chép hoặc di chuyển quyền sở hữu giữa các ``` shared_ptr ```.
+
+<b>6. use_count()</b>
+
+Trả về số lượng shared_ptr đang cùng quản lý đối tượng (bộ đếm tham chiếu).
+
+<br>
+
+💻
+```cpp
+#include <iostream>
+#include <memory>
+
+using namespace std;
+
+int main(int argc, char const *argv[])
+{
+    shared_ptr<int> ptr1 = make_shared<int>(20); // 0x01
+    shared_ptr<int> ptr2 = ptr1;
+    shared_ptr<int> ptr3 = ptr1;
+
+    {
+        shared_ptr<int> ptr4 = ptr1;
+        cout << "Count: " << ptr1.use_count() << endl;
+    }
+
+    cout << "ptr1 = " << *ptr1 << endl;
+    cout << "ptr2 = " << *ptr2 << endl;
+    cout << "ptr3 = " << *ptr3 << endl;
+
+    cout << "Count: " << ptr1.use_count() << endl;
+    
+    int *ptr = ptr1.get();
+    cout << "ptr: " << *ptr << endl;
+    *ptr = 50;
+    cout << "ptr: " << *ptr << endl;
+    /*
+     * trả về 1 con trỏ int
+     */
+
+    shared_ptr<int> a = make_shared<int>(40);   // 0xa1
+    shared_ptr<int> b = make_shared<int>(50);   // 0xb3
+    a.swap(b);
+    cout << "a = " << *a << endl;
+    cout << "b = " << *b << endl;
+    
+    return 0;
+}
+```
+**Kết quả:**
+```cpp
+Count: 4
+ptr1 = 20
+ptr2 = 20
+ptr3 = 20
+Count: 3
+ptr: 20
+ptr: 50
+a = 50
+b = 40
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>11.3. Weak pointer</b></summary>
+<p>
+
+- weak pointer là một smart pointer yếu (non-owning), không sở hữu đối tượng mà nó trỏ tới. Nó chỉ đóng vai trò theo dõi đối tượng được quản lý bởi một **shared_ptr** mà không làm tăng bộ đếm tham chiếu.
+
+<br>
+
+Những phương thức chính mà ``` std::shared_ptr ``` hỗ trợ:
+
+<b>1. use_count()</b>: tương tự ``` shared_ptr ```
+
+<b>2. reset()</b>: tương tự ``` shared_ptr ``` và ``` unique_ptr ```
+
+<b>3. swap()</b>: tương tự ``` shared_ptr ``` và ``` unique_ptr ```
+
+<b>4. operator=</b>
+
+- Gán một ``` shared_ptr ``` hoặc một ``` weak_ptr ``` khác cho ``` weak_ptr ```.
+- Khi gán một shared_ptr cho một weak_ptr sẽ không làm tăng bộ đếm tham chiếu.
+
+<b>5. lock()</b>
+
+Trả về shared_ptr trỏ tới đối tượng mà weak_ptr theo dõi, hoặc null nếu đối tượng đã bị hủy.
+
+<b>6. expired()</b>
+
+Trả về true nếu đối tượng mà weak_ptr theo dõi đã bị hủy.
+
+<br>
+
+💻
+```cpp
+#include <iostream>
+#include <memory>
+
+using namespace std;
+
+int main(int argc, char const *argv[])
+{
+    // Tạo hai shared_ptr cùng quản lý một đối tượng int
+    shared_ptr<int> ptr1 = make_shared<int>(20); // 0x01
+    shared_ptr<int> ptr2 = ptr1;
+
+    // Tạo một weak_ptr trỏ tới đối tượng được quản lý bởi shared_ptr
+    weak_ptr<int> ptr3 = ptr1;
+
+    cout << "Count: " << ptr1.use_count() << endl;
+
+    cout << "ptr3: " << *(ptr3.lock()) << endl;
+
+    ptr1.reset();   // giải phóng quyền sở hữu của ptr1 đối với đối tượng tại địa chỉ 0x01
+
+    cout << "check: " << ptr3.expired() << endl;
+    /*
+     * nếu 0x01 còn tồn tại thì trả về false
+     * ngược lại thì trả về true
+     */
+
+    ptr2.reset();
+    cout << "check: " << ptr3.expired() << endl;
+    
+    return 0;
+}
+```
+**Kết quả:**
+```cpp
+Count: 2
+ptr2: 20
+check: 0
+check: 1
+```
+
+<br>
+
+</p>
+</details>
+
+</p>
+</details>
+
+<br>
+
+<details><summary><b>12. Đa luồng (Thread)</b></summary>
+<p>
+
+<details><summary><b>12.1. Process</b></summary>
+<p>
+
+- Process (tiến trình) là một đơn vị thực thi độc lập, có không gian địa chỉ bộ nhớ riêng. Mỗi process chạy trong một không gian bộ nhớ tách biệt, và việc giao tiếp giữa các process thường khó khăn và yêu cầu các phương thức như IPC (Inter-Process Communication).
+- Bản chất Process là 1 chương trình đang chạy trên hệ thống hoặc một tập hợp các công việc được thực hiện trên máy tính, có phân vùng RAM riêng, có thể sử dụng những phần cứng bên dưới (bàn phím, chuột, ...). Vì mỗi chương trình có vùng RAM riêng các chương trình không thể truy cập vùng RAM lẫn nhau.
+- Mỗi tiến trình có thể bao gồm một hoặc nhiều luồng (thread) của việc thực hiện công việc.
+
+</p>
+</details>
+
+<details><summary><b>12.2. Thread</b></summary>
+<p>
+
+<details><summary><b>📚 Khái niệm</b></summary>
+<p>
+
+</p>
+</details>
+
+<details><summary><b>📚 Tạo và khỏi chạy một thread</b></summary>
+<p>
+
+</p>
+</details>
+
+<details><summary><b>📚Quản lý thread</b></summary>
+<p>
+
+<details><summary><b>📚📚 join()</b></summary>
+<p>
+
+</p>
+</details>
+
+<details><summary><b>📚📚 joinable()</b></summary>
+<p>
+
+</p>
+</details>
+
+<details><summary><b>📚📚 detach()</b></summary>
+<p>
+
+</p>
+</details>
+
+</p>
+</details>
+
+</p>
+</details>
+
+<details><summary><b>12.3. Đồng bồ hóa các luồng</b></summary>
+<p>
+
+<details><summary><b>📚 Mutex</b></summary>
+<p>
+
+</p>
+</details>
+
+<details><summary><b>📚 Atomic operator</b></summary>
+<p>
+
+</p>
+</details>
+
+<details><summary><b>📚 Condition variable</b></summary>
+<p>
+
+</p>
+</details>
+
+</p>
+</details>
+
+<details><summary><b>12.4. Bất đồng bộ</b></summary>
+<p>
+
+<details><summary><b>📚 Khái niệm</b></summary>
+<p>
+
+</p>
+</details>
+
+<details><summary><b>📚 Tạo và  khởi chạy luồng bất đồng bộ</b></summary>
+<p>
+
+</p>
+</details>
+
+<details><summary><b>📚 Truy cập kết quả luồng bất đồng bộ</b></summary>
+<p>
+
+</p>
+</details>
+
+</p>
+</details>
 
 </p>
 </details>
