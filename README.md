@@ -7111,7 +7111,7 @@ int main(int argc, char const *argv[])
 
 <br>
 
-<details><summary><b>8. Standard Template Library (STL)/b></summary>
+<details><summary><b>8. Standard Template Library (STL)</b></summary>
 <p>
 
 <details><summary><b>8.1. Khái niệm/b></summary>
