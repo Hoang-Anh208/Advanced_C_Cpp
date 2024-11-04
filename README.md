@@ -5221,6 +5221,1066 @@ int main()
 <details><summary><b>4. Hướng đối tượng (OOP)</b></summary>
 <p>
 
+<details><summary><b>4.1. Tính đóng gói (Encapsulation)</b></summary>
+<p>
+
+- Là việc che giấu thông tin bên trong đối tượng, chỉ cung cấp những gì cần thiết ra bên ngoài thông qua các phương thức (method). Điều này giúp bảo vệ dữ liệu và giảm rủi ro không mong muốn.
+- Những thông tin được lưu ở các thuộc tính (property) sẽ bị ẩn đi bằng cách khai báo ở quyền truy cập ``` private ```.
+- Trong trường hợp muốn đọc hoặc ghi các property này thì chỉ có thể truy cập gián tiếp thông qua các method ở quyền truy cập ``` public ```.
+
+<br>
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class Student{
+    private:
+        string Name;
+        double GPA;
+        int StudentID;
+
+    public:
+        Student(string name);
+
+        string getName(){               // getter   // đọc giá trị của property
+            return Student::Name;
+        }
+
+        void setGPA(double gpa){        // setter   // ghi giá trị của property
+            Student::GPA = gpa;
+        }
+        double getGPA(){                // getter
+            return Student::GPA;
+        }
+
+        int getID(){                    // getter
+            return Student::StudentID;
+        }
+};
+
+Student::Student(string name){
+    Student::Name = name;
+    static int id = 1000;
+    Student::StudentID = id;
+    ++id;
+}
+
+int main(){
+    Student student1("Trung");
+    Student student2("Thai");
+    Student student3("Thao");
+
+    cout << "ID: " << student1.getID() << endl;
+    cout << "Name: " << student1.getName() << endl;
+
+    cout << "ID: " << student2.getID() << endl;
+    cout << "Name: " << student2.getName() << endl;
+
+    cout << "ID: " << student3.getID() << endl;
+    cout << "Name: " << student3.getName() << endl;
+    return 0;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>4.2. Tính kế thừa (Inheritance)</b></summary>
+<p>
+
+- Kế thừa cho phép một class mới có thể sử dụng lại các thuộc tính và phương thức của một class đã có, và có thể mở rộng thêm tính năng. (tạm gọi là class con kế thừa từ class cha).
+- Để kế thừa từ class khác, ta dùng ký tự ``` : ```.
+- Tất cả thuộc tính và phương thức có quyền truy cập là ``` public ``` và ``` protected ``` ở class cha sẽ được class con kế thừa.
+- Có 3 kiểu kế thừa là public, private và protected.
+
+<details><summary><b>📚 Kế thừa public</b></summary>
+<p>
+
+- Các member **public** của **class cha** vẫn sẽ là **public** trong **class con**.
+- Các member **protected** của **class cha** vẫn sẽ là **protected** trong **class con**.
+- Các member **private** của class cha **không thể truy cập trực tiếp từ class con** nhưng có thể được truy cập gián tiếp qua các phương thức public hoặc protected của class cha
+
+<br>
+
+💻 **Ví dụ 1:**
+```cpp
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class Person{
+    protected:
+        // các member nằm trong protected thì object sẽ không truy cập đến được
+        // nhưng các class con kế thừa từ class cha thì có thể truy cập được
+        string Name;
+        int Age;
+        string Home_Address;
+
+    public:
+        string getName(){           // getter   // đọc giá trị của property
+            return Person::Name;
+        }
+        void setName(string name){  // setter   // ghi giá trị của property
+            Person::Name = name;
+        }
+
+        int getAge(){               // getter
+            return Person::Age;
+        }
+        void setAge(int age){       // setter
+            Person::Age = age;
+        }
+
+        string getAddress(){                // getter
+            return Person::Home_Address;
+        }
+        void setAddress(string address){    // setter
+            Person::Home_Address = address;
+        }
+
+        void displayInfo(){
+            cout << "Name: " << Person::Name << endl;
+            cout << "Age: " << Person::Age << endl;
+            cout << "Address: " << Person::Home_Address << endl;
+        }
+};
+
+class Student : public Person{
+    private:
+        string School_Name;
+        double GPA;
+        int StudentID;
+
+    public:
+        Student(){
+            static int id = 1000;
+            Student::StudentID = id;
+            id++;
+        }
+
+        string getSchoolName(){
+            return Student::School_Name;
+        }
+        void setSchoolName(string school_name){
+            Student::School_Name = school_name;
+        }
+
+        double getGPA(){
+            return Student::GPA;
+        }
+        void setGPA(double gpa){
+            Student::GPA = gpa;
+        }
+
+        int getID(){
+            return Student::StudentID;
+        }
+
+        void displayInfo(){ // override
+            cout << "Name: " << Student::Name << endl;
+            cout << "Age: " << Student::Age << endl;
+            cout << "Address: " << Student::Home_Address << endl;
+            cout << "School name: " << Student::School_Name << endl;
+            cout << "GPA: " << Student::GPA << endl;
+        }
+};
+
+int main(){
+    Person person1;
+    person1.setName("Trung");
+    person1.setAge(20);
+    person1.setAddress("HCM");
+    person1.displayInfo();
+
+    cout << "-----------------------" << endl;
+    
+    Student student1;
+    student1.setName("Trungg");
+    student1.setAge(24);
+    student1.setAddress("HCMM");
+    student1.setGPA(8.1);
+    student1.setSchoolName("DinhTienHoang");
+    student1.displayInfo();
+    return 0;
+}
+```
+
+<br>
+
+💻 **Ví dụ 2:**
+```cpp
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class DoiTuong{ 
+    // private:
+    //     int id;   
+    //     string name;
+
+    protected:
+        int id;   
+        string name;      
+
+    public:
+        DoiTuong(string newName){
+            static int _id = 1;
+            id = _id;
+            _id++;
+
+            // check chuỗi nhập vào, tránh có ký tự đặc biệt, số, space,...
+            name = newName;
+        }
+
+        // getter
+        int getID(){
+            return id;
+        }
+
+        string getName(){
+            return name;
+        }
+
+        void display(){
+            cout << "Ten: " << getName() << endl;
+            cout << "ID: " << getID() << endl;
+        }
+};
+
+class SinhVien : public DoiTuong{
+    private:
+        string chuyenNganh;
+
+    public:
+        SinhVien(string name, string chuyenNganh): DoiTuong(name){
+            SinhVien::chuyenNganh = chuyenNganh;
+        }
+
+        string getChuyenNganh(){
+            return chuyenNganh;
+        }
+
+        void display(){
+            cout << "Ten: " << SinhVien::getName() << endl;
+            cout << "ID: " << SinhVien::getID() << endl;
+            cout << "Chuyen nganh: " << SinhVien::getChuyenNganh() << endl;
+        }
+};
+
+class HocSinh : public DoiTuong{
+    public:
+        string lop;
+
+        HocSinh(string name, string lop): DoiTuong(name){
+            HocSinh::lop = lop;
+        }
+
+        string getLop(){
+            return lop;
+        }
+
+        void display(){
+            cout << "Ten: " << getName() << endl;
+            cout << "ID: " << getID() << endl;
+            cout << "Lop: " << getLop() << endl;
+        }
+};
+
+class GiaoVien : public DoiTuong{
+    public:
+        string chuyenMon;
+
+        GiaoVien(string name, string chuyenMon): DoiTuong(name){
+            GiaoVien::chuyenMon = chuyenMon;
+        }
+
+        string getChuyenMon(){
+            return chuyenMon;
+        }
+
+        void display(){
+            cout << "Ten: " << getName() << endl;
+            cout << "ID: " << getID() << endl;
+            cout << "Chuyen mon: " << getChuyenMon() << endl;
+        }
+};
+
+int main(int argc, char const *argv[])
+{
+    DoiTuong dt1("Hoang");
+    dt1.display();
+    cout << endl;
+
+    SinhVien sv1("Tuan","DTVT");
+    sv1.display();
+    cout << endl;
+
+    HocSinh hs1("Trung", "12A1");
+    hs1.display();
+    cout << endl;
+
+    GiaoVien gv1("Bao", "Toan");
+    gv1.display();
+    cout << endl;
+
+    return 0;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 Kế thừa protected</b></summary>
+<p>
+
+- Các member **public, protected** của class cha sẽ là **protected** trong class con.
+- Các member private của class cha không thể truy cập trực tiếp từ class con nhưng có thể được truy cập gián tiếp qua các phương thức public hoặc protected của class cha.
+
+<br>
+
+💻 **Ví dụ 1:**
+```cpp
+#include <iostream>
+
+using namespace std;
+
+class Base{
+    protected:
+        int protectedVar;
+    public:
+        Base(): protectedVar(10){}
+        void showProtectedVar(){
+            cout << "Protected variable: " << protectedVar << endl;
+        }
+};
+
+class Derived : protected Base{
+    public:
+        void accessBaseMembers(){
+            // Có thể truy cập protectedVar vì nó được kế thừa dưới dạng protected
+            cout << "Accessing protectedVar from Base: " << protectedVar << endl;
+        }
+};
+
+int main(){
+    Derived obj;
+    obj.accessBaseMembers();
+
+    // Không thể truy cập trực tiếp thành viên protected từ đối tượng class con
+    // obj.protectedVar; // Lỗi: không thể truy cập trực tiếp
+}
+```
+
+<br>
+
+💻 **Ví dụ 2:**
+```cpp
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class DoiTuong{ 
+    // private:
+    //     int id;   
+    //     string name;
+
+    protected:
+        int id;   
+        string name;      
+
+    public:
+        DoiTuong(string newName){
+            static int _id = 1;
+            id = _id;
+            _id++;
+
+            // check chuỗi nhập vào, tránh có ký tự đặc biệt, số, space,...
+            name = newName;
+        }
+
+        // getter
+        int getID(){
+            return id;
+        }
+
+        string getName(){
+            return name;
+        }
+
+        void display(){
+            cout << "Ten: " << getName() << endl;
+            cout << "ID: " << getID() << endl;
+        }
+};
+
+class SinhVien : protected DoiTuong{
+    private:
+        string chuyenNganh;
+
+    public:
+        SinhVien(string name, string chuyenNganh): DoiTuong(name){
+            SinhVien::chuyenNganh = chuyenNganh;
+        }
+
+        string getChuyenNganh(){
+            return chuyenNganh;
+        }
+
+        void display(){
+            cout << "Ten: " << SinhVien::getName() << endl;
+            cout << "ID: " << SinhVien::getID() << endl;
+            cout << "Chuyen nganh: " << SinhVien::getChuyenNganh() << endl;
+        }
+};
+
+int main(int argc, char const *argv[])
+{
+    DoiTuong dt1("Hoang");
+    dt1.display();
+
+    cout << endl;
+
+    SinhVien sv1("Tuan","DTVT");
+    sv1.display();
+    return 0;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 Kế thừa private</b></summary>
+<p>
+
+- Các member **public, protected** của class cha sẽ trở thành **private** trong class con.
+- Các member private của class cha không thể truy cập trực tiếp từ class con nhưng có thể được truy cập gián tiếp qua các phương thức public hoặc protected của class cha.
+
+<br>
+
+💻 **Ví dụ**
+```cpp
+#include <iostream>
+
+using namespace std;
+
+class Base{
+    protected:
+        int protectedVar;
+    public:
+        int publicVar;
+        Base(): protectedVar(10), publicVar(20){}
+};
+
+class Derived : private Base{
+    public:
+        void accessBaseMembers(){
+            // Có thể truy cập protectedVar và publicVar bên trong class con
+            cout << "protectedVar: " << protectedVar << endl;
+            cout << "publicVar: " << publicVar << endl;
+        }
+};
+
+int main(){
+    Derived obj;
+    obj.accessBaseMembers();
+
+    // Không thể truy cập trực tiếp thành viên của Base qua đối tượng Derived
+    // obj.publicVar; // Lỗi: không thể truy cập vì publicVar đã trở thành private trong Derived
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 Kế thừa ảo</b></summary>
+<p>
+
+- Khi một lớp con kế thừa từ hai lớp cha, và hai lớp cha này đều kế thừa từ một lớp chung (gốc), thì lớp chung đó có thể bị kế thừa nhiều lần, dẫn đến việc dữ liệu từ lớp chung bị sao chép, gây ra các xung đột dữ liệu hoặc không nhất quán. Đây được gọi là vấn đề kim cương (Diamond problem).
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+
+using namespace std;
+
+class A {
+    public:
+        A(){ cout << "Constructor A\n"; }
+
+        void hienThiA(){ cout << "Day la lop A\n"; }
+};
+
+class B : public A{
+    public:
+        B(){ cout << "Constructor B\n"; }
+
+        void hienThiB(){ cout << "Day la lop B\n"; }
+};
+
+class C : public A {
+    public:
+        C(){ cout << "Constructor C\n"; }
+
+        void hienThiC(){ cout << "Day la lop C\n"; }
+};
+
+class D : public B, public C{
+    public:
+        D(){ cout << "Constructor D\n"; }
+
+        void hienThiD(){ cout << "Day la lop D\n"; }
+};
+
+int main()
+{
+    D d;
+    d.hienThiA();
+    return 0;
+}
+```
+**Kết quả**:
+``` error: request for member 'hienThiA' is ambiguous ```
+
+📝 lớp D sẽ có hai phiên bản của class A, một từ B và một từ C, dẫn đến vấn đề đa kế thừa "diamond problem". 
+
+📝 Muốn gọi method ``` hienThiA ``` thì ta phải chỉ định rõ ràng là gọi từ class nào. Ví dụ: ``` d.B::hienThiA() ``` hoặc ``` d.C::hienThiA() ```
+
+📝 Không thể gọi trực tiếp method ``` hienThiA ``` vì lúc này compiler không biết nên gọi từ class nào.
+
+<br>
+
+Để khắc phục vấn đề trên thì ngoài việc chỉ định rõ ràng là gọi từ class nào, ta có thể thêm vào từ khóa ``` virtual ``` khi các class cha (class cơ sở) kế thừa từ class chung. Điều này giúp tạo ra một bản sao duy nhất của các thành phần được kế thừa từ class chung.
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+
+using namespace std;
+
+class A {
+    public:
+        A(){ cout << "Constructor A\n"; }
+
+        void hienThiA(){ cout << "Day la lop A\n"; }
+};
+
+class B : virtual public A{
+    public:
+        B(){ cout << "Constructor B\n"; }
+
+        void hienThiB(){ cout << "Day la lop B\n"; }
+};
+
+class C : virtual public A {
+    public:
+        C(){ cout << "Constructor C\n"; }
+
+        void hienThiC(){ cout << "Day la lop C\n"; }
+};
+
+class D : public B, public C{
+    public:
+        D(){ cout << "Constructor D\n"; }
+
+        void hienThiD(){ cout << "Day la lop D\n"; }
+};
+
+int main() {
+    D d;
+
+    d.hienThiA();
+
+    // Gọi phương thức từ lớp A qua B và C
+    // d.B::hienThiA(); // Gọi hàm hienThiA từ lớp A thông qua B
+    // d.C::hienThiA(); // Gọi hàm hienThiA từ lớp A thông qua C
+
+    // d.hienThiB();
+    // d.hienThiC();
+    // d.hienThiD();
+
+    return 0;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 Đa kế thừa</b></summary>
+<p>
+	
+- Đa kế thừa trong C++ cho phép một class kế thừa từ nhiều class khác.
+- Đa kế thừa thường dùng để kết hợp các chức năng từ nhiều class.
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+
+using namespace std;
+
+class Sensor{
+    public:
+        void initialize(){
+            cout << "Initializing sensor" << endl;
+            // code khởi tạo cảm biến
+        }
+
+        int readData(){
+            cout << "Reading sensor data" << endl;
+            // code đọc dữ liệu cảm biến
+            return 30;
+        }
+};
+
+class Communication{
+    public:
+        void setupCommunication() {
+            cout << "Setting up communication protocol" << endl;
+            // code thiết lập giao thức truyền thông (SPI, I2C, UART,...)
+        }
+
+        void sendData(int data) {
+            cout << "Sending data: " << data << endl;
+            // code gửi dữ liệu qua các giao thức
+        }
+};
+
+class Control : public Sensor, public Communication{
+    public:
+        Control(){
+            setupCommunication();
+
+            initialize();
+
+            int data = readData();
+
+            sendData(data);
+        }
+};
+
+int main(int argc, char const *argv[])
+{
+    Control sensorControl;
+    return 0;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+</p>
+</details>
+
+<details><summary><b>4.3. Tính đa hình (Polymorphism)</b></summary>
+<p>
+
+- Tính đa hình có nghĩa là "nhiều dạng" và nó xảy ra khi chúng ta có nhiều class có liên quan với nhau thông qua tính kế thừa.
+
+Tính đa hình có thể được chia thành hai loại chính:
+- Đa hình tại thời điểm biên dịch (Compile-time Polymorphism).
+- Đa hình tại thời điểm chạy (Run-time Polymorphism).
+
+<details><summary><b>📚 Đa hình compile-time</b></summary>
+<p>
+
+<details><summary><b>📚📚 Nạp chồng hàm (Function Overloading)</b></summary>
+<p>
+
+Nạp chồng hàm (Function Overloading) xảy ra khi các phương thức trong cùng một lớp có cùng tên nhưng khác nhau về số lượng hoặc kiểu tham số. Compiler sẽ xác định method nào sẽ được gọi dựa trên tham số truyền vào.
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+// 1 method có thể có nhiều input parameter khác nhau
+class TinhToan{
+    private:
+        int a;
+        int b;
+    public:
+        int tong(int a, int b){
+            return a+b;
+        }
+        double tong(int a, int b, int c, double d){
+            return (double)a+b+c+d;
+        }
+        double tong(int a, double b){
+            return (double)a+b;
+        }
+};
+
+int main(int argc, char const *argv[]){
+
+    TinhToan th, th1, th2;
+    cout << th.tong(2, 5) << endl;
+    cout << th1.tong(2, 5, 7, 6.7) << endl;
+    cout << th2.tong(2, 3.5) << endl;
+
+    return 0;
+}
+```
+📝 Viết method tính tổng, có thể là tổng của 2,3,4 hoặc nhiều hơn, hoặc là các tham số truyền vào khác nhau. Khi khởi tạo object và gọi method thì lúc đó nó sẽ căn cứ vào tham số truyền vào để biết là nó sẽ lấy method nào.
+
+📝 Quá trình trên đểu xảy ra ở compiler, nghĩa là khi ta đưa các tham số đầu vào thì nó căn cứ vào đó và bắt đầu generate ra code.
+
+📝 Trong C++ thì việc nhiều hàm có cùng tên nhưng khác nhau tham số đầu vào và kiểu dữ liệu trả về vẫn có thể nằm toàn cục chứ không nhất thiết phải nằm trong class.
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚📚 Nạp chồng toán tử (Operator Overloading)</b></summary>
+<p>
+
+Nạp chồng toán tử (Operator Overloading) trong C++ là một tính năng cho phép bạn định nghĩa lại các toán tử để chúng hoạt động theo cách mà bạn mong muốn đối với các kiểu dữ liệu do người dùng định nghĩa (như class hoặc struct).
+
+Khi bạn muốn nạp chồng một toán tử, bạn cần định nghĩa một hàm có từ khóa ``` operator ``` theo sau là ``` ký hiệu toán tử ``` mà bạn muốn nạp chồng.
+
+Cú pháp: 
+
+```cpp
+<return_type> operator symbol (parameters) {
+	// logic của toán tử
+}
+```
+
+Trong đó:
+
+- **return_type**: Kiểu dữ liệu trả về của hàm (method).
+- **operator symbol**: Toán tử mà bạn muốn nạp chồng.
+- **parameters**: Các tham số truyền vào (có thể là một hoặc nhiều đối số, phụ thuộc vào toán tử).
+
+Các toán tử có thể overload được:
+
+```cpp
++	–	*	/	%	^	&	|
+~	!	=	<	>	+=	-=	*=
+/=	%=	^=	&=	|=	<<	>>	>>=
+<<=	==	!=	<=	>=	&&	||	++
+—	->*	,	->	[]	()	new	delete
+new[]	delete[]
+```
+
+Một số toán tử sau không overload được:
+
+- Toán tử . (chấm)
+- Toán tử phạm vi ::
+- Toán tử điều kiện ?:
+- Toán tử sizeof
+
+<br>
+
+💻 **Ví dụ 1: Số phức**
+```cpp
+#include <iostream>
+
+using namespace std;
+
+class Complex{
+    private:
+        double realPart;    // phần thực
+        double imagPart;    // phần ảo
+    
+    public:
+        Complex(double real = 0, double imag = 0): realPart(real), imagPart(imag){}
+
+        // nạp chồng toán tử +
+        Complex operator + (const Complex& other){
+            Complex result;
+            result.realPart = this->realPart + other.realPart;
+            result.imagPart = this->imagPart + other.imagPart;
+            return result;
+        }
+
+        // nạp chồng toán tử so sánh bằng (==)
+        bool operator == (const Complex& other) const{
+            return (this->realPart == other.realPart && this->imagPart == other.imagPart);
+        }
+
+        // hàm hiển thị
+        void display(){
+            cout << realPart << " + " << imagPart << "i" << endl;
+        }
+};
+
+int main() 
+{
+    Complex c1(3,4);
+    Complex c2(5,6);
+    Complex c3 = c1 + c2;
+    c1.display();
+    c2.display();
+    c3.display();
+
+    if (c1 == c2){
+        cout << "Hai số phức bằng nhau" << endl;
+    }
+    else{
+        cout << "Hai số phức không bằng nhau" << endl;
+    }
+    return 0;
+}
+```
+
+📝 **con trỏ ``` this ```**:
+
+- this là một con trỏ đặc biệt có sẵn trong tất cả các method thành viên của class. Nó trỏ đến object hiện tại đang gọi method đó.
+- this là hằng con trỏ (constant pointer), nghĩa là this luôn trỏ tới đối tượng hiện tại và bạn không thể thay đổi để this trỏ tới đối tượng khác. Tuy nhiên, giá trị của đối tượng mà this trỏ tới có thể thay đổi trừ khi hàm thành viên được khai báo là const.
+- this chỉ tồn tại trong các method của class.
+- this tự động được truyền khi bạn gọi method của một object.
+
+<br>
+
+💻 **Ví dụ 2:**
+```cpp
+#include <iostream>
+
+using namespace std;
+
+class PhanSo{
+    private:
+        int numerator;   // Tử số
+        int denominator; // Mẫu số
+
+        // Hàm tìm Ước Chung Lớn Nhất (Greatest Common Divisor - GCD)
+        int gcd(int a, int b) const {
+            return (b == 0) ? a : gcd(b, a % b);
+        }
+
+        // Hàm rút gọn phân số
+        void simplify(){
+            int divisor = gcd(numerator, denominator);
+            numerator /= divisor;
+            denominator /= divisor;
+        }
+
+    public:
+        PhanSo(int num = 0, int den = 1): numerator(num), denominator(den){
+            if (!denominator){
+                throw invalid_argument("Mẫu số phải khác 0!");
+            }
+        }
+
+        // nạp chồng toán tử nhân (*)
+        PhanSo operator * (const PhanSo& other){
+            // other.tu = 11;
+            // other.mau = 13;
+            PhanSo ketqua;
+            ketqua.numerator   = this->numerator   * other.numerator;
+            ketqua.denominator = this->denominator * other.denominator;
+            ketqua.simplify();
+            return ketqua;
+        }
+        
+        // nạp chồng toán tử cộng (+)
+        PhanSo operator + (const PhanSo& other){
+            PhanSo ketqua;
+            ketqua.numerator = this->numerator * other.denominator + this->denominator * other.numerator;
+            ketqua.denominator = this->denominator * other.denominator;
+            ketqua.simplify();
+            return ketqua;
+        }
+
+        // nạp chồng toán tử so sánh bằng (==)
+        bool operator == (PhanSo other){
+            return (this->numerator == other.numerator && this->denominator == other.denominator);
+        }
+
+        // nạp chồng toán tử nhập (>>)
+        friend istream& operator >> (istream& input, PhanSo& f){
+            cout << "Nhập tử số: ";
+            input >> f.numerator;
+
+            cout << "Nhập mẫu số: ";
+            input >> f.denominator;
+
+            if (!f.denominator){
+                throw invalid_argument("Mẫu số phải khác 0!");
+            }
+            return input;
+        }
+
+        // nạp chồng toán tử xuất (<<)
+        friend ostream& operator << (ostream& output, const PhanSo& f){
+            output << f.numerator << "/" << f.denominator;
+            return output;
+        }
+
+        void display(){
+            cout << "Tu: " << numerator << " , mau: " << denominator << endl;
+        }
+};
+
+int main(int argc, char const *argv[])
+{
+    try{
+        PhanSo p1(1, 2);             // 0xc8
+        PhanSo p2(4, 6);             // 0xa5
+        PhanSo p3 = p1 * p2;
+
+        p1.display();
+        p2.display();
+        p3.display();
+
+        if (p1 == p2){
+            cout << "p1 = p2" << endl;
+        }
+        else{
+            cout << "p1 # p2" << endl;
+        }
+
+        PhanSo p4, p5, p6;
+        cout << "Nhập phân số p4:\n";
+        cin >> p4;
+
+        cout << "Nhập phân số p5:\n";
+        cin >> p5;
+
+        p6 = p4 + p5;
+        cout << p6;
+    }
+    catch (const invalid_argument& e) {       // Bắt ngoại lệ invalid_argument
+        cout << "Lỗi: " << e.what() << endl;  // Hiển thị thông báo lỗi
+    }
+    
+    return 0;
+}
+```
+**Kết quả**:
+```cpp
+Tu: 1 , mau: 2
+Tu: 4 , mau: 6
+Tu: 1 , mau: 3
+p1 # p2
+Nhập phân số p4:
+Nhập tử số: 2
+Nhập mẫu số: 3
+Nhập phân số p5:
+Nhập tử số: 5
+Nhập mẫu số: 9
+11/9
+```
+📝 **Toán tử cộng (+)**: dùng để cộng 2 phân số.
+
+📝 **Toán tử nhân (*)**: dùng để nhân 2 phân số.
+
+📝 Sau khi tính toán sẽ tự động rút gọn phân số kết quả thông qua gọi method ``` simplify() ```.
+
+📝 **Toán tử so sánh bằng (==)**: so sánh hai phân số đã được rút gọn để xem chúng có bằng nhau hay không. Nếu tử số và mẫu số của hai phân số bằng nhau, thì chúng bằng nhau.
+
+📝 **Toán tử nhập (>>)**: Toán tử nhập cho phép người dùng nhập tử số và mẫu số từ bàn phím. 
+
+📝 **Toán tử xuất (<<)**: Toán tử xuất hiển thị phân số theo định dạng "tử số/mẫu số".
+
+📝 **try**: một khối lệnh chứa các câu lệnh mà bạn muốn theo dõi các ngoại lệ. Nếu một ngoại lệ xảy ra trong khối try, chương trình sẽ lập tức dừng thực thi các lệnh tiếp theo trong khối try và chuyển sang tìm kiếm khối catch thích hợp để xử lý ngoại lệ.
+
+📝 **catch**: bắt các ngoại lệ được ném ra từ khối try. Nếu một ngoại lệ xảy ra, nó sẽ được bắt ở khối catch tương ứng, và chương trình sẽ thực thi các lệnh trong khối catch để xử lý ngoại lệ đó.
+
+📝 **throw**: là từ khóa được sử dụng để ném một ngoại lệ (exception). Khi một vấn đề xảy ra, chương trình có thể phát hiện lỗi đó và ném ngoại lệ với từ khóa throw. Ngoại lệ này sẽ được chuyển lên chuỗi các lệnh cho đến khi nó được bắt bởi một khối lệnh catch tương ứng.
+
+</p>
+</details>
+
+</p>
+</details>
+
+<details><summary><b>📚 Đa hình run-time</b></summary>
+<p>
+
+Đa hình tại thời điểm chạy hay còn gọi là đa hình ghi đè (**overriding**), đa hình động xảy ra khi một lớp con ghi đè lại một phương thức của lớp cha và phương thức này được gọi thông qua con trỏ hoặc tham chiếu đến lớp cha. Phương thức của lớp con sẽ được gọi tại thời điểm thực thi, không phải lúc biên dịch.
+
+**(Sẽ nói cụ thể ở bài Virtual Function)**
+
+</p>
+</details>
+
+</p>
+</details>
+
+<details><summary><b>4.4. Tính trừu tượng (Abstraction)</b></summary>
+<p>
+
+- Trừu tượng hóa và việc chỉ ra những thông tin quan trọng nhất của đối tượng, giấu đi nhưng chi tiết phức tạp không cần thiết (logic xử lý, thuật toán để đưa ra kết quả cuối cùng), giúp tập trung vào cách sử dụng đối tượng hơn là cách nó được thực hiện.
+
+<br>
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+#include <string>
+#include <cmath>
+
+using namespace std;
+
+class PTBH{
+    private:    // x1, x2 là tính đóng gói
+        double x1;
+        double x2;
+        double a,b,c;
+        double delta(){
+            return (double)(b*b - 4*a*c);
+        }
+        void ketqua(){
+            if (PTBH::delta() < 0){
+                cout << "PTVN" << endl;
+            }
+            else if (PTBH::delta() == 0){
+                cout << "x1 = x2 = " << (double)(-b/(2*a)) << endl;
+            }
+            else{
+                cout << "x1 = " << (-b + sqrt(delta()))/(2*a) << endl;
+                cout << "x2 = " << (-b - sqrt(delta()))/(2*a) << endl;
+            }
+        }
+    public:
+        void printResult(double a, double b, double c){
+            PTBH::a = a;
+            PTBH::b = b;
+            PTBH::c = c;
+            ketqua();
+        }
+};
+
+int main(int argc, char const *argv[]){
+    PTBH phuongtrinh1;
+    phuongtrinh1.printResult(1,2,10);
+    return 0;
+}
+```
+
+📝 Tính trừu tượng giống với tính đóng gói nhưng khác nhau về ý nghĩa.
+
+📝 Tính đóng gói: những property ở private thì phải truy cập gián tiếp thông qua các method, constructor, getter, setter.
+
+📝 Tính trừu tượng: khi thiết kế một class cho người dùng sử dụng thì người dùng chỉ được phép sử dụng những hàm do lập trình viên quy định , quá trình tạo ra kết quả cuối cùng không được phép truy cập đến, bị ẩn đi mặc dù nằm trong private.
+
+<br>
+
+</p>
+</details>
+
 </p>
 </details>
 
