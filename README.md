@@ -2294,6 +2294,164 @@ num = num ^ mask; // num bây giờ là 1000
 
 <br>
 
+💻 Ví dụ 1:
+```cpp
+#include <stdio.h>
+#include <stdint.h>
+                                          //    0    1
+#define GENDER    1 << 0  // bit 0: giới tính  nữ   nam     0b00000001
+#define SHIRT     1 << 1  // bit 1: áo thun   không  có     0b00000010
+#define HAT       1 << 2  // bit 2: nón       không  có     0b00000100
+#define SHOES     1 << 3  // bit 3: giày      không  có     0b00001000
+#define FEATURE1  1 << 4  // bit 4: tính năng 1             0b00010000
+#define FEATURE2  1 << 5  // bit 5: tính năng 2             0b00100000
+#define FEATURE3  1 << 6  // bit 6: tính năng 3             0b01000000
+#define FEATURE4  1 << 7  // bit 7: tính năng 4             0b10000000
+
+
+// enable bit
+void enableFeature(uint8_t *options, uint8_t feature){
+    *options = *options | feature;
+}
+
+// disable bit
+void disableFeature(uint8_t *options, uint8_t feature){
+    *options = *options & ~feature;
+}
+
+// check bit
+int8_t isFeatureEnabled(uint8_t options, uint8_t feature){
+    return ((options & feature) != 0);
+}
+
+// liệt kê các tính năng đang bật
+void listSelectedFeatures(uint8_t options){
+    printf("Selected Features: \n");
+
+    const char* featureName[] = {
+        "Gender",
+        "Shirt",
+        "Hat",
+        "Shoes",
+        "Feature 1",
+        "Feature 2",
+        "Feature 3",
+        "Feature 4"
+    };
+
+    for (int i=0; i<8; i++){
+        if ((options >> i) & 1){
+            printf("%s\n", featureName[i]);
+        }
+    }
+}
+
+int main(int argc, char const *argv[])
+{
+    uint8_t options = 0; // 0xb6: 0b00000000
+
+    // Thêm tính năng
+    enableFeature(&options, GENDER | HAT | SHOES);
+
+    // Loại bỏ tính năng
+    disableFeature(&options, HAT);
+
+    // Liệt kệ các tính năng đã chọn
+    listSelectedFeatures(options);
+    
+    return 0;
+}
+```
+
+<br>
+
+💻 Ví dụ 2:
+```cpp
+#include <stdio.h>
+#include <stdint.h>
+
+#define COLOR_RED     0 // 0b0000 0000
+#define COLOR_BLUE    1 // 0b0000 0001
+#define COLOR_BLACK   2 // 0b0000 0010
+#define COLOR_WHITE   3 // 0b0000 0011
+
+#define POWER_100HP   0
+#define POWER_150HP   1
+#define POWER_50HP    2
+
+#define ENGINE_1_5L   0
+#define ENGINE_2_0L   1
+
+typedef uint8_t CarColor;
+typedef uint8_t CarPower;
+typedef uint8_t CarEngine;
+
+#define SUNROOF_MASK         1 << 0
+#define PREMIUM_AUDIO_MASK   1 << 1
+#define SPORTS_PACKAGE_MASK  1 << 2
+// Thêm các bit masks khác tùy thuộc vào tùy chọn
+
+typedef struct{
+    uint8_t additionalOptions : 3; // 3-bit cho tùy chọn bổ sung
+    CarColor  color  : 2; // 2-bit cho màu sắc
+    CarPower  power  : 2; // 2-bit cho năng lượng
+    CarEngine engine : 1; // 1-bit cho động cơ
+} CarOptions;
+
+void configureCar(CarOptions *car, CarColor color, CarPower power, CarEngine engine, uint8_t options){
+    car->color  = color;
+    car->power  = power;
+    car->engine = engine;
+    car->additionalOptions = options;
+}
+
+void setOption(CarOptions *car, uint8_t optionMask){
+    car->additionalOptions |= optionMask;
+}
+
+void resetOption(CarOptions *car, uint8_t optionMask){
+    car->additionalOptions &= ~optionMask;
+}
+
+void displayCarOptions(const CarOptions car) {
+    const char *colors[]  = {"Red", "Blue", "Black", "White"};
+    const char *powers[]  = {"100HP", "150HP", "200HP"};
+    const char *engines[] = {"1.5L", "2.0L"};
+
+    printf("Car Configuration: \n");
+    printf("Color: %s\n", colors[car.color]);
+    printf("Power: %s\n", powers[car.power]);
+    printf("Engine: %s\n", engines[car.engine]);
+    printf("Sunroof: %s\n", (car.additionalOptions & SUNROOF_MASK) ? "Yes" : "No");
+    printf("Premium Audio: %s\n", (car.additionalOptions & PREMIUM_AUDIO_MASK) ? "Yes" : "No");
+    printf("Sports Package: %s\n", (car.additionalOptions & SPORTS_PACKAGE_MASK) ? "Yes" : "No");
+    printf("\n");
+}
+
+int main()
+{
+    CarOptions myCar;
+
+    // cấu hình các thông số của xe
+    configureCar(&myCar, COLOR_BLACK, POWER_150HP, ENGINE_2_0L, 0); 
+
+    // thêm tính năng bổ sung
+    setOption(&myCar, SUNROOF_MASK);
+    setOption(&myCar, PREMIUM_AUDIO_MASK);
+
+    // hiển thị các thông số và tính năng của xe
+    displayCarOptions(myCar);
+
+    // xóa tính năng  bổ sung
+    resetOption(&myCar, PREMIUM_AUDIO_MASK); 
+
+    // hiển thị các thông số và tính năng của xe
+    displayCarOptions(myCar);
+
+    return 0;
+}
+```
+
 </p>
 </details>
 
@@ -4102,12 +4260,340 @@ int isFull(Queue queue){
 
 <br>
 
+<details><summary><b>15. AUTOSAR Classic</b></summary>
+<p>
+
+</p>
+</details>
+
+<br>
+
 </p>
 </details>
 
 # C++
 <details><summary>Nhấp vào đây để xem chi tiết</summary>
 <p>
+
+<details><summary><b>1. Tham chiếu - Tham trị</b></summary>
+<p>
+
+<details><summary><b>1.1. Tham trị (Pass by value)</b></summary>
+<p>
+
+- Trong C++, "tham trị" (pass by value) là một cách truyền tham số vào hàm, trong đó một bản sao của biến được truyền cho hàm. Điều này có nghĩa là bất kỳ thay đổi nào được thực hiện trên tham số bên trong hàm sẽ không ảnh hưởng đến giá trị của biến gốc bên ngoài hàm.
+- Khi sử dụng tham trị, nó sẽ tốn bộ nhớ trên RAM để cấp phát, sau đó thực hiện copy giá trị.
+
+💻 Ví dụ:
+```cpp
+#include <iostream>
+
+void test(int a){   	// int a = 10 (0x20: 10)
+    printf("dia chi a: %p\n", &a);
+}
+
+int main()
+{
+    int x = 10; 	// 0x34: 10
+    printf("dia chi x: %p\n", &x);
+    test(x);
+}
+```
+
+</p>
+</details>
+
+<details><summary><b>1.2. Tham chiếu (Pass by reference)</b></summary>
+<p>
+
+- Trong C++, tham chiếu (pass by reference) là một cách truyền tham số vào hàm, trong đó thay vì truyền một bản sao của biến, địa chỉ của biến sẽ được truyền vào trực tiếp. Điều này có nghĩa là bất kỳ thay đổi nào thực hiện trên tham số trong hàm sẽ ảnh hưởng trực tiếp đến biến gốc bên ngoài hàm.
+- Tham chiếu (&): bỏ qua bước khởi tạo biến, không tốn bộ nhớ RAM, Stack không tăng lên
+
+💻 Ví dụ 1:
+```cpp
+#include <iostream>
+
+void test(int &a){   
+    cout << "Địa chỉ biến a: " << &a << endl;
+    a = 50;
+    cout << "Giá trị: " << a << endl;
+}
+
+int main()
+{
+    int x = 10; 	// 0x34: 10
+    cout << "Địa chỉ biến x: " << &x << endl;
+    test(x);
+}
+```
+
+📝 Lưu ý: tham chiếu có thể thay đổi giá trị.
+
+📝 Nếu nhu cầu của bạn là chỉ đọc thì thêm từ khóa const, vì nó chỉ cho phép đọc giá trị, không cho phép thay đổi.
+
+💻 Ví dụ 2:
+```cpp
+#include <iostream>
+
+void test(const int &a){   
+    cout << "Địa chỉ biến a: " << &a << endl;
+    cout << "Giá trị: " << a << endl;
+}
+
+int main()
+{
+    int x = 10; 	// 0x34: 10
+    cout << "Địa chỉ biến x: " << &x << endl;
+    test(x);
+}
+```
+
+</p>
+</details>
+
+</p>
+</details>
+
+<br>
+
+<details><summary><b>2. Cấp phát động với trong C++</b></summary>
+<p>
+
+<details><summary><b>2.1. new operator</b></summary>
+<p>
+
+- Toán tử new được sử dụng để cấp phát bộ nhớ động cho một biến, một mảng hoặc một đối tượng.
+- Khi sử dụng new, bộ nhớ sẽ được cấp phát trên phân vùng Heap (khu vực nhớ dành cho cấp phát động) thay vì trên stack (khu vực nhớ dành cho cấp phát tĩnh).
+
+</p>
+</details>
+
+<details><summary><b>2.2. delete operator</b></summary>
+<p>
+
+- Toán tử delete dùng để giải phóng bộ nhớ đã được cấp phát bằng new. Điều này giúp tránh lãng phí bộ nhớ và hiện tượng rò rỉ bộ nhớ (memory leak).
+
+💻 Ví dụ 1: Cấp phát động một biến đơn
+```cpp
+    int *ptr = new int(10);
+    /****************************************************
+     * new int(10)
+     *      + Khởi tạo một biến int
+     *      + Cấp phát động cho biến int (0x01 - Heap)
+     *      + Gán giá trị tại địa chỉ vừa cấp phát là 10
+     *      + Trả về địa chỉ của vùng nhớ mới được cấp phát
+     * 
+     * con trỏ ptr sẽ trỏ đến địa chỉ trên
+     ***************************************************/
+
+    cout << "Địa chỉ đối tượng: " << ptr << endl;
+    cout << "Giá trị đối tượng: " << *ptr << endl;
+
+    delete ptr;
+```
+
+<br>
+
+💻 Ví dụ 2: Cấp phát động một mảng
+```cpp
+#include <iostream>
+
+using namespace std;
+
+int main(int argc, char const *argv[])
+{   
+    int size;
+    cout << "Nhập kích thước của mảng: ";
+    cin >> size;
+
+    int *arr = new int[size]; 
+
+    for (int i = 0; i < size; i++){
+        arr[i] = i * 2;
+    }
+
+    for (int i = 0; i < size; i++){
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+
+    delete[] arr;  // Giải phóng bộ nhớ   
+
+    return 0;
+}
+```
+
+📝 Mặc dù việc cấp phát động bằng new trong C++ không thể thay đổi kích thước giống như realloc trong C, nhưng cấp phát động vẫn có nhiều điểm khác biệt so với khai báo mảng tĩnh.
+📝 Mảng tĩnh: 
+
+- Kích thước phải được xác định khi biên dịch (compile-time), nghĩa là bạn cần biết trước số lượng phần tử và không thể thay đổi trong khi chạy chương trình.
+- Bộ nhớ của mảng tĩnh được cấp phát trên stack, và nó sẽ tự động giải phóng khi ra khỏi phạm vi (scope) của nó. Bộ nhớ mảng tĩnh không tồn tại lâu dài trong suốt chương trình mà phụ thuộc vào phạm vi khai báo.
+- Kích thước mảng trên stack bị giới hạn bởi kích thước của stack (thường là vài MB), nên nếu bạn cần một mảng lớn, mảng tĩnh có thể không khả thi và dễ gây lỗi stack overflow.
+
+📝 Cấp phát động với new: 
+
+- Bạn có thể xác định kích thước mảng tại thời điểm chạy, giúp linh hoạt hơn nếu kích thước mảng phụ thuộc vào các giá trị mà bạn chỉ biết trong quá trình chạy chương trình.
+- Bộ nhớ được cấp phát trên heap, có thể tồn tại cho đến khi bạn giải phóng thủ công bằng delete[]. Điều này cho phép bộ nhớ tồn tại lâu dài hơn, ngay cả khi phạm vi khai báo của con trỏ đã kết thúc.
+- Vì bộ nhớ cấp phát động nằm trên heap, bạn có thể tạo ra các mảng rất lớn nếu bộ nhớ hệ thống còn đủ, mà không bị giới hạn bởi stack.
+
+<br>
+
+💻 Ví dụ 3: Cấp phát động cho một biến của struct
+```cpp
+#include <iostream>
+
+using namespace std;
+
+typedef struct{
+    int x;
+    int y;
+} Point;
+
+int main(int argc, char const *argv[])
+{   
+    Point *p1 = new Point;
+    p1->x = 10;
+    p1->y = 20;
+    cout << "Point 1: (" << p1->x << ", " << p1->y << ")" << endl << endl;
+
+    Point *p2 = new Point{5, 15};
+    cout << "Point 2: (" << p2->x << ", " << p2->y << ")" << endl << endl;
+
+    Point *points = new Point[3];    // Cấp phát động cho một mảng gồm 3 biến Point
+    points[0] = {1,2};
+    points[1] = {3,4};
+    points[2] = {5,6};
+    for (int i = 0; i < 3; i++) {
+        cout << "Point " << i + 1 << ": (" << points[i].x << ", " << points[i].y << ")" << endl;
+    }
+
+    delete p1;
+    delete p2;
+    delete[] points;
+
+    return 0;
+}
+```
+
+<br>
+
+💻 Ví dụ 4: Cấp phát động một mảng
+```cpp
+#include <iostream>
+
+using namespace std;
+
+class SinhVien{
+    private:
+        string name;
+        int id;
+        int age;
+    
+    public:
+        SinhVien(string _name, int _age): name(_name), age(_age){
+            static int _id = 1;
+            id = _id;
+            _id++;
+        }
+
+        void display(){
+            cout << "Name: " << name << ", ID: " << id << ", Age: " << age << endl;
+        }
+};
+
+int main(int argc, char const *argv[])
+{   
+    SinhVien *p1 = new SinhVien("Trung", 25);
+    p1->display();
+
+    SinhVien *p2 = new SinhVien("Tuan", 22);
+    p2->display();
+
+    return 0;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+</p>
+</details>
+
+<br>
+
+<details><summary><b>3. Class</b></summary>
+<p>
+
+</p>
+</details>
+
+<br>
+
+<details><summary><b>4. Hướng đối tượng (OOP)</b></summary>
+<p>
+
+</p>
+</details>
+
+<br>
+
+<details><summary><b>5. Hàm ảo (Virtual Function)</b></summary>
+<p>
+
+</p>
+</details>
+
+<br>
+
+<details><summary><b>6. Template</b></summary>
+<p>
+
+</p>
+</details>
+
+<br>
+
+<details><summary><b>7. Namespace</b></summary>
+<p>
+
+</p>
+</details>
+
+<br>
+
+<details><summary><b>8. Standard Template Library (STL)/b></summary>
+<p>
+
+</p>
+</details>
+
+<br>
+
+<details><summary><b>9. Design Patterns</b></summary>
+<p>
+
+</p>
+</details>
+
+<br>
+
+<details><summary><b>10. Smart Pointer</b></summary>
+<p>
+
+</p>
+</details>
+
+<br>
+
+<details><summary><b>11. Đa luồng (Thread)</b></summary>
+<p>
+
+</p>
+</details>
+
+<br>
 
 </p>
 </details>
