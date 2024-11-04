@@ -7114,7 +7114,7 @@ int main(int argc, char const *argv[])
 <details><summary><b>8. Standard Template Library (STL)</b></summary>
 <p>
 
-<details><summary><b>8.1. Khái niệm/b></summary>
+<details><summary><b>8.1. Khái niệm</b></summary>
 <p>
 
 STL là một thư viện trong ngôn ngữ lập trình C++ cung cấp một tập hợp các template classes và functions để thực hiện nhiều loại cấu trúc dữ liệu và các thuật toán phổ biến. STL đã trở thành một phần quan trọng của ngôn ngữ C++ và làm cho việc lập trình trở nên mạnh mẽ, linh hoạt và hiệu quả.
@@ -7129,7 +7129,7 @@ Một số thành phần chính của STL:
 </p>
 </details>
 
-<details><summary><b>8.2. Vector/b></summary>
+<details><summary><b>8.2. Vector</b></summary>
 <p>
 
 - Là một trong những container quan trọng nhất trong STL.
@@ -7209,7 +7209,7 @@ int main() {
 </p>
 </details>
 
-<details><summary><b>8.3. List/b></summary>
+<details><summary><b>8.3. List</b></summary>
 <p>
 
 - Triển khai dưới dạng danh sách liên kết hai chiều (linked list), nghĩa là gồm những nodes có địa chỉ ngẫu nhiên liên kết với nhau.
@@ -7315,7 +7315,7 @@ int main() {
 </p>
 </details>
 
-<details><summary><b>8.4. Map/b></summary>
+<details><summary><b>8.4. Map</b></summary>
 <p>
 
 - Cung cấp một cấu trúc dữ liệu ánh xạ key – value, trong đó value giữa các object có thể giống nhau nhưng key là duy nhất trong map, nếu có 2 value cùng key thì lấy key và value sau cùng.
@@ -7437,7 +7437,7 @@ int main(int argc, char const *argv[]){
 </p>
 </details>
 
-<details><summary><b>8.5. Iterator/b></summary>
+<details><summary><b>8.5. Iterator</b></summary>
 <p>
 
 - Iterator là một đối tượng đại diện cho vị trí trong container và cho phép duyệt qua các phần tử của container (như std::vector, std::list, std::map, v.v.). Chúng có thể được xem là một công cụ để truy cập tuần tự các phần tử mà không cần biết cấu trúc nội bộ của container. Iterator sẽ lưu địa chỉ đầu tiên của list và cho phép duyệt qua từng phần tử.
@@ -7455,7 +7455,7 @@ int main(int argc, char const *argv[]){
 
 <br>
 
-<details><summary><b>9. Lambda/b></summary>
+<details><summary><b>9. Lambda</b></summary>
 <p>
 
 </p>
