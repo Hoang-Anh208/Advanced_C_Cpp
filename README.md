@@ -7449,6 +7449,8 @@ int main(int argc, char const *argv[]){
 
 - Các thư viện như std::vector, std::list, và nhiều container khác trong C++ Standard Library đều định nghĩa một class iterator riêng bên trong chúng. Điều này giúp mỗi container có một loại iterator phù hợp với cách tổ chức dữ liệu và cách duyệt qua các phần tử của nó.
 
+</p>
+</details>
 
 </p>
 </details>
@@ -8708,7 +8710,7 @@ check: 1
 </p>
 </details>
 
-<details><summary><b>📚 Tạo và khỏi chạy một thread</b></summary>
+<details><summary><b>📚 Tạo và khởi chạy một thread</b></summary>
 <p>
 
 </p>
