@@ -6647,9 +6647,6 @@ int main() {
 
 Template là một tính năng mạnh mẽ giúp viết mã tổng quát, có thể làm việc với nhiều kiểu dữ liệu khác nhau mà không cần phải viết lại mã cho từng kiểu cụ thể. Có hai loại template chính trong C++:
 
-- Function Template (Hàm mẫu)
-- Class Template (Lớp mẫu)
-
 <details><summary><b>6.1. Function Template (Hàm mẫu)</b></summary>
 <p>
 
@@ -8707,11 +8704,74 @@ check: 1
 <details><summary><b>📚 Khái niệm</b></summary>
 <p>
 
+- Thread là đơn vị nhỏ hơn của một process, còn được gọi là "luồng". Một process có thể chứa nhiều thread, và các thread này chia sẻ cùng không gian địa chỉ bộ nhớ của process đó.
+- Ví dụ: mở hai chương trình khác nhau trên máy tính, ví dụ như một trình duyệt web và một trình soạn thảo văn bản. Mỗi chương trình là một process riêng biệt, có không gian bộ nhớ và tài nguyên hệ thống độc lập.
+- Các luồng trong cùng một tiến trình có thể chia sẻ cùng một không gian bộ nhớ và các tài nguyên khác của tiến trình, bao gồm cả biến toàn cục và biến cục bộ.
+
 </p>
 </details>
 
 <details><summary><b>📚 Tạo và khởi chạy một thread</b></summary>
 <p>
+
+```cpp
+    thread task1(test1, 1000);     // task1: đại diện cho luồng 1
+    thread task2(test2, 3000);     // task2: đại diện cho luồng 2
+```
+
+- task1, task2: là các object thuộc class thread. Mỗi object sẽ tương ứng với một luồng được tạo ra và mỗi một luồng sẽ thực thi một hàm hay tác vụ nào đó.
+- Tham số 1: địa chỉ hàm muốn thực thi trong luồng.
+- Tham số 2, 3, …: tham số truyền vào của hàm.  
+
+<br>
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+#include <thread>
+#include <chrono>
+
+using namespace std;
+
+void delay(uint32_t time){
+    this_thread::sleep_for(chrono::seconds(time));
+    /**************************************************************************
+     * Hàm này mô phỏng một tác vụ tạm dừng (delay) trong khoảng thời gian time (ms).
+     * std::this_thread::sleep_for() tạm dừng luồng hiện tại trong thời gian được chỉ định.
+     * Ví dụ, nếu time = 1000, luồng sẽ bị tạm dừng trong 1 giây.
+     *************************************************************************/
+}
+
+void test1(uint32_t time){
+    int i = 0;
+    while (1){
+        cout << "task 1, i = " << i++ << endl;
+        delay(time);
+    }
+}
+
+void test2(uint32_t time){
+    int i = 0;
+    while (1){
+        cout << "task 2, i = " << i++ << endl;
+        delay(time);
+    }
+}
+
+int main(int argc, char const *argv[])
+{
+    thread task1(test1, 1);     // t1: đại diện cho luồng 1
+    thread task2(test2, 2);     // t2: đại diện cho luồng 2
+
+    /* luồng chính giúp chương trình chạy liên tục */
+    while(1){
+        cout << "This is main\n";
+        delay(1);
+    }
+
+    return 0;
+}
+```
 
 </p>
 </details>
@@ -8722,17 +8782,194 @@ check: 1
 <details><summary><b>📚📚 join()</b></summary>
 <p>
 
+- Phương thức join() được sử dụng để chờ cho một luồng kết thúc. Khi gọi join() trên một luồng, nó đảm bảo rằng luồng hiện tại sẽ không tiếp tục thực hiện cho đến khi luồng được join() hoàn tất. Điều này hữu ích khi bạn cần chắc chắn rằng một luồng đã hoàn thành công việc trước khi tiếp tục với luồng chính.
+- Mỗi luồng chỉ có thể gọi method join() duy nhất 1 lần.
+- Nếu một luồng đã được join(), nó không còn khả năng tham gia (joinable) nữa.
+
+<br>
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+#include <thread>
+#include <chrono>
+
+using namespace std;
+
+void delay(uint32_t time){
+    this_thread::sleep_for(chrono::seconds(time));
+}
+
+void test1(uint32_t time){
+    int i = 0;
+    for (int j = 0; j < 10; j++){
+        cout << "task 1, i = " << i++ << endl;
+        delay(time);
+    }
+}
+
+void test2(uint32_t time){
+    int i = 0;
+    for (int j = 0; j < 10; j++){
+        cout << "task 2, i = " << i++ << endl;
+        delay(time);
+    }
+}
+
+int main(int argc, char const *argv[])
+{
+    thread task1(test1, 1);     // t1: đại diện cho luồng 1
+    thread task2(test2, 2);     // t2: đại diện cho luồng 2
+
+    task1.join();
+    task2.join();
+
+    /* luồng chính giúp chương trình chạy liên tục */
+    while(1){
+        cout << "This is main\n";
+        delay(1);
+    }
+
+    return 0;
+}
+```
+
+📝 Đặt luồng chính (while(1)) sau khi gọi join().
+
+📝 Luồng 1 (thực thi hàm test1) và luồng 2 (thực thi hàm test2) sẽ chạy song song với nhau.
+
+📝 Luồng chính (while(1)) chỉ bắt đầu chạy khi luồng 1 kết thúc và luồng 2 cũng kết thúc.
+
+
 </p>
 </details>
 
 <details><summary><b>📚📚 joinable()</b></summary>
 <p>
 
+- Kiểm tra xem một thread đã kết thúc hoặc đã gọi join() hay chưa. Nếu chưa thì trả về true, khi này ta có thể bắt đầu khởi chạy thread. Ngược lại, nếu thread đã kết thúc rồi thì trả về false.
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+#include <thread>
+#include <chrono>
+
+using namespace std;
+
+void delay(uint32_t time){
+    this_thread::sleep_for(chrono::seconds(time));
+}
+
+void test1(uint32_t time){
+    int i = 0;
+    for (int j = 0; j < 5; j++){
+        cout << "task 1, i = " << i++ << endl;
+        delay(time);
+    }
+}
+
+void test2(uint32_t time){
+    int i = 0;
+    for (int j = 0; j < 5; j++){
+        cout << "task 2, i = " << i++ << endl;
+        delay(time);
+    }
+}
+
+int main(int argc, char const *argv[])
+{
+    thread task1(test1, 1);     // t1: đại diện cho luồng 1
+    thread task2(test2, 2);     // t2: đại diện cho luồng 2
+
+    task1.join();
+
+    if (task1.joinable()){
+        cout << "Thread 1 chưa kết thúc\n";
+    }
+    else{
+        cout << "Thread 1 đã kết thúc\n";
+    }
+
+    task2.join();
+
+    if (task1.joinable()){
+        cout << "Thread 2 chưa kết thúc\n";
+    }
+    else{
+        cout << "Thread 2 đã kết thúc\n";
+    }    
+
+    /* luồng chính giúp chương trình chạy liên tục */
+    while(1){
+        cout << "This is main\n";
+        delay(1);
+    }
+
+    return 0;
+}
+```
+
 </p>
 </details>
 
 <details><summary><b>📚📚 detach()</b></summary>
 <p>
+
+- Phương thức detach() tách luồng khỏi luồng chính và cho phép nó chạy độc lập. Khi một luồng được tách ra, luồng chính không chờ luồng đó kết thúc nữa.
+- Sau khi gọi detach(), khi luồng chính kết thúc, những luồng khác cũng sẽ kết thúc theo.
+- Không thể join() một luồng đã được detach(). Nếu một luồng đã được tách ra, nó không còn khả năng tham gia (joinable) nữa.
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+#include <thread>
+#include <chrono>
+
+using namespace std;
+
+void delay(uint32_t time){
+    this_thread::sleep_for(chrono::seconds(time));
+}
+
+void test1(uint32_t time){
+    int i = 0;
+    for (int j = 0; j < 5; j++){
+        cout << "task 1, i = " << i++ << endl;
+        delay(time);
+    }
+}
+
+void test2(uint32_t time){
+    int i = 0;
+    for (int j = 0; j < 5; j++){
+        cout << "task 2, i = " << i++ << endl;
+        delay(time);
+    }
+}
+
+int main(int argc, char const *argv[])
+{
+    thread task1(test1, 1);     // t1: đại diện cho luồng 1
+    thread task2(test2, 2);     // t2: đại diện cho luồng 2
+
+    task1.detach();
+    task2.detach();
+
+    /* luồng chính giúp chương trình chạy liên tục */
+    int i = 0;
+    while(1){
+        cout << "This is main, i = " << i++ << endl;
+        delay(1);
+    }
+
+    return 0;
+}
+```
+
+📝 Luồng task1, luồng task2 và luồng chính chạy song song và độc lập với nhau.
+
+📝 Luồng chính không còn chờ luồng task1 và luồng task2 chạy xong rồi mới thực hiện.
 
 </p>
 </details>
@@ -8749,17 +8986,427 @@ check: 1
 <details><summary><b>📚 Mutex</b></summary>
 <p>
 
+- Mutex (Mutual Exclusion): Là một đối tượng đồng bộ hóa cung cấp cơ chế để giới hạn truy cập tài nguyên chỉ cho một luồng tại một thời điểm. Khi một luồng khóa (lock) mutex, các luồng khác phải chờ cho đến khi mutex được mở khóa (unlock) mới có thể tiếp tục truy cập tài nguyên.
+- Trạng thái của mutex: Một mutex có hai trạng thái chính:
+
++ Khóa (locked): Khi một luồng đã chiếm giữ mutex.
++ Mở khóa (unlocked): Khi không có luồng nào chiếm giữ mutex, các luồng khác có thể tiếp tục khóa nó.
+
+- std::mutex được định nghĩa trong thư viện <mutex>. Các phương thức cơ bản bao gồm:
+
++ lock(): Khóa mutex. Nếu mutex đã bị khóa bởi một luồng khác, luồng hiện tại sẽ bị chặn (block) cho đến khi mutex được mở khóa.
++ unlock(): Mở khóa mutex. Điều này cho phép các luồng khác có thể tiếp tục khóa mutex.
++ try_lock(): Thử khóa mutex. Nếu mutex chưa bị khóa, nó sẽ khóa mutex và trả về true. Nếu đã bị khóa bởi một luồng khác, nó sẽ không chặn luồng hiện tại mà trả về false.
+
+**Ví dụ 1:**
+
+```cpp
+#include <iostream>
+#include <thread>
+#include <mutex>
+
+using namespace std;
+
+int counter = 0;
+mutex mtx;
+
+void increment(int num_iterations) {
+    for (int i = 0; i < num_iterations; ++i) {
+        mtx.lock();     // Khóa mutex trước khi truy cập biến chia sẻ
+        ++counter;      // Thao tác trên biến chia sẻ
+        mtx.unlock();   // Mở khóa mutex sau khi truy cập
+    }
+}
+
+int main() {
+    const int num_iterations = 10;
+
+    thread t1(increment, num_iterations);
+    thread t2(increment, num_iterations);
+
+    t1.join();
+    t2.join();
+
+    cout << "Final counter value: " << counter << endl;
+
+    return 0;
+}
+```
+
+<br>
+
+- std::lock_guard là một lớp RAII (Resource Acquisition Is Initialization) tự động khóa mutex khi được tạo và tự động mở khóa khi đối tượng bị hủy (ra khỏi phạm vi).
+
+**Ví dụ 2:**
+
+```cpp
+#include <iostream>
+#include <thread>
+#include <chrono>
+#include <mutex>
+
+using namespace std;
+
+mutex mtx;
+
+void delay(uint32_t time){
+    this_thread::sleep_for(chrono::seconds(time));
+}
+
+void display(int id){
+    while (1){
+        lock_guard<mutex> lock(mtx);
+        cout << "This is task display: " << id << endl;
+        delay(1);
+    }
+}
+
+int main(int argc, char const *argv[])
+{
+    thread t1(display, 1);
+    thread t2(display, 2);
+    thread t3(display, 3);
+
+    t1.join();
+    t2.join();
+    t3.join();
+
+    return 0;
+}
+```
+
+<br>
+
+- std::unique_lock tự động khóa mutex khi được tạo nhưng cung cấp tính linh hoạt hơn std::lock_guard, cho phép mở khóa thủ công hoặc tự động mở khóa khi ra khỏi phạm vi, hoặc thử khóa với thời gian chờ.
+
+**Ví dụ 3:**
+
+```cpp
+#include <iostream>
+#include <thread>
+#include <chrono>
+#include <mutex>
+
+using namespace std;
+
+mutex mtx;
+
+bool lock_test = false;
+
+void delay(uint32_t time){
+    this_thread::sleep_for(chrono::seconds(time));
+}
+
+void display(int id){
+    while (1){
+        unique_lock<mutex> lock(mtx);   
+        cout << "This is task display: " << id << endl;
+        delay(1);
+        lock.unlock();
+    }
+}
+
+int main(int argc, char const *argv[])
+{
+    thread t1(display, 1);
+    thread t2(display, 2);
+    thread t3(display, 3);
+
+    t1.join();
+    t2.join();
+    t3.join();
+    return 0;
+}
+```
+
 </p>
 </details>
 
 <details><summary><b>📚 Atomic operator</b></summary>
 <p>
 
+- std::atomic là một struct template trong C++ được thiết kế để thực hiện các thao tác trên các biến mà các thao tác này không thể bị gián đoạn bởi các luồng khác. Điều này giúp đảm bảo tính nhất quán của dữ liệu và tránh tình trạng race condition khi nhiều luồng cùng truy cập và thay đổi dữ liệu chia sẻ.
+- Các thao tác atomic:
+
++ Gán và đọc giá trị (store và load): Ghi và đọc giá trị của biến atomic.
++ Tăng và giảm giá trị (++, --): Tăng hoặc giảm giá trị của biến atomic.
++ Cộng và trừ giá trị (+=, -=): Thực hiện phép cộng, trừ giá trị nguyên tử.
+
+**Ví dụ:**
+
+```cpp
+#include <iostream>
+#include <thread>
+#include <chrono>
+#include <mutex>
+#include <atomic>
+
+using namespace std;
+
+mutex mtx;
+bool lock_test = false;
+
+atomic<int> counter(0);
+
+void delay(uint32_t time){
+    this_thread::sleep_for(chrono::seconds(time));
+}
+
+void display(int id){
+    while (1){
+        unique_lock<mutex> lock(mtx);   //lock_test = true;
+        cout << "This is task display: " << id << endl;
+        delay(1);
+        lock.unlock();
+
+
+        lock_guard<mutex> lock1(mtx);
+        cout << "Counter: " << ++counter << endl;
+        delay(1);
+    }
+
+
+}
+
+/********************************************
+ * atomic: dùng cho biến toàn cục
+ * lock_guard, unique_lock: dùng cho ngoại vi
+ *******************************************/
+
+int main(int argc, char const *argv[])
+{
+    thread t1(display, 1);
+    thread t2(display, 2);
+    thread t3(display, 3);
+
+    t1.join();
+    t2.join();
+    t3.join();
+
+    return 0;
+}
+```
+
 </p>
 </details>
 
 <details><summary><b>📚 Condition variable</b></summary>
 <p>
+
+- Khi hai hoặc nhiều luồng cần giao tiếp và đồng bộ hóa với nhau, condition variable là một lựa chọn thích hợp trong C++. 
+std::condition_variable cho phép một luồng chờ cho đến khi một điều kiện cụ thể được đáp ứng, và một luồng khác có thể thông báo khi điều kiện đó được thỏa mãn. Điều này rất hữu ích trong việc giao tiếp và đồng bộ hóa dữ liệu giữa các luồng.
+- Cách hoạt động của std::condition_variable:
+
+a) Một luồng chờ (wait) cho đến khi có tín hiệu từ một luồng khác:
+
+- Luồng này sẽ chờ trong trạng thái chờ điều kiện, tránh lãng phí tài nguyên CPU.
+- Để sử dụng wait(), cần có một std::unique_lock<std::mutex> và một đối tượng std::condition_variable, vì nó phải tạm thời mở khóa mutex để các luồng khác có thể truy cập vào mutex và thay đổi điều kiện. Sau khi điều kiện được thỏa mãn và luồng được đánh thức, std::unique_lock sẽ tự động khóa lại mutex để đảm bảo tính nhất quán trước khi tiếp tục.
+- Lưu ý: std::lock_guard không hỗ trợ mở khóa và khóa lại mutex như vậy. Khi một std::lock_guard được tạo, nó sẽ giữ mutex cho đến khi đối tượng bị hủy (khi ra khỏi phạm vi), do đó không phù hợp để sử dụng với wait.
+
+b) Một luồng khác thông báo (notify_one() hoặc notify_all()) rằng điều kiện đã được đáp ứng:
+
+- notify_one(): Chỉ đánh thức một luồng đang chờ.
+- notify_all(): Đánh thức tất cả các luồng đang chờ.
+
+<br>
+
+**Ví dụ 1:**
+
+```cpp
+
+#include <iostream>
+#include <thread>               // tạo ra các luồng
+#include <mutex>                // khóa dữ liệu khi có nhiều luồng cùng truy cập
+#include <condition_variable>   // sử dụng biến điều kiện giúp đồng bộ hóa giữa các luồng
+#include <chrono>               // quản lý thời gian
+
+using namespace std;
+
+void delay(uint32_t time){
+    this_thread::sleep_for(chrono::seconds(time));
+}
+
+
+/************************************************************************************************
+ * biến toàn cục lưu trữ dữ liệu được đọc từ cảm biến, khởi tạo bằng 0
+ ***********************************************************************************************/
+int sensor_data = 0;
+
+
+/************************************************************************************************
+ * biến boolean dùng để kiểm tra xem dữ liệu đã được đọc hay chưa
+ ***********************************************************************************************/
+bool check_data = false;
+
+
+/************************************************************************************************
+ * mtx: 1 đối tượng khóa (mutex) dùng để bảo vệ tài nguyên chia sẻ (sensor_data và check_data) 
+ * giữa các luồng, đảm bảo rằng không có hai luồng nào cùng lúc truy cập vào các tài nguyên này
+ ***********************************************************************************************/
+mutex mtx;
+
+
+/************************************************************************************************
+ * cv: object điều kiện (condition variable) giúp đồng bộ hóa giữa các luồng. Nó được sử dụng để 
+ * thông báo cho các luồng khác biết khi nào có sự thay đổi về dữ liệu.
+ ***********************************************************************************************/
+condition_variable cv;
+
+
+/************************************************************************************************
+ * sensor_read: hàm thực thi trong 1 luồng riêng để mô phỏng quá trình đọc dữ liệu từ cảm biến
+ * 
+ * unique_lock<mutex> lock(mtx): 
+ *      + khóa đối tượng mtx để bảo vệ tài nguyên chia sẻ
+ *      + unique_lock giúp tự động giải phóng khóa khi ra khỏi phạm vi
+ * 
+ * sensor_data = rand() % 100: 
+ *      + cập nhật giá trị của sensor_data với một số ngẫu nhiên từ 0 đến 99
+ * 
+ * check_data = true:
+ *      + đánh dấu rằng dữ liệu đã được cập nhật và in ra màn hình 1 thông báo
+ * 
+ * lock.unlock(): 
+ *      + Lệnh lock.unlock() được thực hiện trước khi gọi cv.notify_one() để  đảm bảo rằng mutex 
+ *        sẽ được mở khóa trước khi cv.notify_one() được gọi
+ *      + Giảm độ nghẽn: Bằng cách mở khóa mutex trước khi thông báo, sensor_read đảm bảo rằng 
+ *        ngay sau khi gọi cv.notify_all(), các luồng khác có thể tiếp tục xử lý ngay lập tức
+ * 
+ * cv.notify_one(): 
+ *      + thông báo cho một luồng khác đang chờ đợi rằng dữ liệu mới đã sẵn sàng để xử lý
+ ***********************************************************************************************/
+void sensor_read(){
+    while (1){
+        delay(2);
+        unique_lock<mutex> lock(mtx);
+        sensor_data = rand() % 100;
+        check_data = true;
+        cout << "Read data done!\n";
+        lock.unlock();
+        cv.notify_one();
+    }
+}
+
+
+/************************************************************************************************
+ * process_data: hàm thực thi trong 1 luồng riêng để xử lý dữ liệu từ cảm biến
+ * 
+ * unique_lock<mutex> lock(mtx): 
+ *      + khóa đối tượng mtx để truy cập vào tài nguyên chia sẻ
+ *      + unique_lock giúp tự động giải phóng khóa khi ra khỏi phạm vi
+ * 
+ * cv.wait(lock, []{return check_data;}): 
+ *      + []{return check_data;}: con trỏ hàm, trả về kiểu boolean
+ *      + chờ cho đến khi check_data là true để đảm bảo rằng luồng này sẽ không tiếp tục cho đến 
+ *        khi có dữ liệu mới và in ra màn hình dữ liệu cảm biến
+ * 
+ * check_data = false:
+ *      + đặt lại biến check_data để chuẩn bị cho lần đọc dữ liệu tiếp theo
+ * 
+ * lock.unlock(): 
+ *      + ngay sau khi truy cập vào màn hình console để in dữ liệu thì mở khóa ngay để tiếp tục 
+ *        đọc dữ liệu cho lần tiếp theo, giúp giảm độ nghẽn trong quá trình xử lý dữ liệu
+ ***********************************************************************************************/
+void process_data(){
+    while (1){
+        unique_lock<mutex> lock(mtx);
+        cv.wait(lock, []{return check_data;});
+        cout << "Data: " << sensor_data << endl;
+        lock.unlock();
+        check_data = false; 
+    }
+}
+
+
+int main(int argc, char const *argv[])
+{
+    thread task1(sensor_read);
+    thread task2(process_data);
+
+    task1.join();
+    task2.join();
+
+    /************************************************************************************************
+     * Luồng task1 (sensor_read) mô phỏng việc đọc dữ liệu từ cảm biến mỗi 2 giây, sau đó cập nhật 
+     * biến sensor_data và thông báo rằng dữ liệu đã sẵn sàng.
+     * 
+     * Luồng task2 (process_data) chờ dữ liệu từ task1. Khi sensor_read thông báo, process_data sẽ 
+     * lấy giá trị sensor_data, hiển thị ra màn hình, và đánh dấu rằng dữ liệu đã được xử lý.
+     ***********************************************************************************************/
+    return 0;
+}
+```
+
+<br>
+
+**Ví dụ 2:**
+
+```cpp
+#include <iostream>
+#include <thread>               // tạo ra các luồng
+#include <mutex>                // khóa dữ liệu khi có nhiều luồng cùng truy cập
+#include <condition_variable>   // sử dụng biến điều kiện giúp đồng bộ hóa giữa các luồng
+#include <chrono>               // quản lý thời gian
+
+using namespace std;
+
+void delay(uint32_t time){
+    this_thread::sleep_for(chrono::seconds(time));
+}
+
+int sensor_data = 0;
+
+bool check_data = false;
+
+mutex mtx;
+
+condition_variable cv;
+
+void sensor_read(){
+    while (1){
+        delay(2);
+        sensor_data = rand() % 100;
+        check_data = true;
+        unique_lock<mutex> lock(mtx);    // có thể ko cần
+        cout << "Read data done!\n";
+        lock.unlock();
+        cv.notify_all();
+    }
+}
+
+void process_data_1(){
+    while (1){
+        unique_lock<mutex> lock(mtx);
+        cv.wait(lock, []()->bool{return check_data;}); // trả về true -> break
+        cout << "Process Data 1: " << sensor_data << endl;
+        lock.unlock();
+        check_data = false;  
+    }
+}
+
+void process_data_2(){
+    while (1){
+        unique_lock<mutex> lock(mtx);
+        cv.wait(lock, []()->bool{return check_data;}); // trả về true -> break
+        cout << "Process Data 2: " << sensor_data << endl;
+        lock.unlock();  // giảm độ nghẽn
+        check_data = false;       
+    }
+}
+
+int main(int argc, char const *argv[])
+{
+    thread task1(sensor_read);
+    thread task2(process_data_1);
+    thread task3(process_data_2);
+
+    task1.join();
+    task2.join();
+    task3.join();
+
+    return 0;
+}
+```
 
 </p>
 </details>
@@ -8773,17 +9420,189 @@ check: 1
 <details><summary><b>📚 Khái niệm</b></summary>
 <p>
 
+- Bất đồng bộ (asynchronous programming) là một kỹ thuật lập trình cho phép thực hiện các tác vụ mà không cần chờ chúng hoàn thành trước khi tiếp tục thực hiện các tác vụ khác. Bằng cách này, chương trình có thể tận dụng tối đa tài nguyên hệ thống và cải thiện hiệu suất.
+- Trong C++, lập trình bất đồng bộ cho phép chạy các tác vụ trong các luồng riêng biệt, xử lý các tác vụ mất thời gian (như I/O, tính toán nặng) mà không làm gián đoạn luồng chính. Các thành phần chính để hỗ trợ lập trình bất đồng bộ trong C++ bao gồm:
+
++ ``` std::async ```: Khởi chạy một tác vụ bất đồng bộ, trả về đối tượng.
++ ``` std::future ```: Được sử dụng để lưu trữ kết quả của một tác vụ sẽ hoàn thành trong tương lai.
++ ``` std::shared_future ```: Cho phép nhiều luồng cùng truy cập kết quả của một tác vụ bất đồng bộ.
+
 </p>
 </details>
 
-<details><summary><b>📚 Tạo và  khởi chạy luồng bất đồng bộ</b></summary>
+<details><summary><b>📚 Tạo và khởi chạy luồng bất đồng bộ</b></summary>
 <p>
+
+- std::async là một hàm trong C++ (từ C++11 trở đi) tạo ra một luồng để thực thi một công việc (task) có thể chạy bất đồng bộ, dựa trên một hàm hoặc biểu thức lambda mà bạn cung cấp. Kết quả của công việc này được trả về dưới dạng std::future, kiểu dữ liệu cho phép truy xuất giá trị của tác vụ sau khi nó hoàn tất.
+- Cú pháp:
+``` std::future<T> std::async(std::launch policy, Callable&& func, Args&&... args) ```
+
+- policy: chế độ chạy:
+
++ std::launch::async: hàm sẽ chạy ngay lập tức trên một luồng mới.
++ std::launch::deferred: hàm chỉ chạy khi kết quả của std::future được yêu cầu (lazy evaluation), nghĩa là khi bạn gọi future.get().
+
+- func:  Hàm hoặc biểu thức lambda cần thực hiện bất đồng bộ.
+- args: Các tham số truyền vào func (nếu có).
+
+<br>
 
 </p>
 </details>
 
 <details><summary><b>📚 Truy cập kết quả luồng bất đồng bộ</b></summary>
 <p>
+
+- Khi std::async được gọi, một tác vụ bất đồng bộ được tạo ra và vùng bộ nhớ cho kết quả sẽ được cấp phát động (trên heap).
+- std::future hoặc std::shared_future sẽ nắm quyền quản lý kết quả này và giữ một con trỏ đến vùng nhớ chứa kết quả.
+- Khi get()được gọi, giá trị được trả về từ bộ nhớ này. Nếu là std::future, get() sẽ chỉ có thể gọi một lần. Nếu là std::shared_future, get() có thể gọi nhiều lần.
+- Sự khác nhau giữa std::future và std::shared_future
+
++ std::future: Đại diện cho một giá trị sẽ có trong tương lai và chỉ cho phép một luồng duy nhất lấy giá trị đó. Sau khi phương thức get() được gọi, giá trị sẽ được "di chuyển" và không thể lấy lại từ std::future lần nữa. Nếu có nhiều thread cố gắng gọi get() trên cùng một std::future, chương trình sẽ bị lỗi.
++ std::shared_future: Cho phép nhiều luồng cùng chia sẻ và truy cập kết quả của một tác vụ bất đồng bộ. Đối tượng shared_future có thể được sao chép và chia sẻ giữa các thread, mỗi thread có thể gọi get() mà không làm mất kết quả.
+Khi khởi tạo bằng std::async, std::future là lựa chọn mặc định. Nếu cần chia sẻ kết quả giữa nhiều thread, bạn phải chuyển std::future sang std::shared_future.
+
+**Ví dụ 1:**
+
+```cpp
+#include <iostream>
+#include <thread>
+#include <future>
+#include <mutex>
+
+using namespace std;
+
+int sensor_data = 0;
+
+mutex mtx;
+
+void delay(uint32_t time){
+    this_thread::sleep_for(chrono::seconds(time));
+}
+
+int sensor_read(){
+    for (int i=0; i<7; i++){
+        unique_lock<mutex> ulock(mtx);
+        cout << "sensor read, i = " << i << endl;
+        ulock.unlock();
+        delay(1);
+    }
+    sensor_data = rand() % 100;
+    cout << "Read data done!\n";
+    return sensor_data;
+}
+
+void task1(uint32_t time){
+    int i = 0;
+    while(1){
+        unique_lock<mutex> ulock(mtx);
+        cout << "task 1, i = " << i++ << endl;
+        ulock.unlock();
+        delay(time);
+    }
+}
+
+void task2(uint32_t time){
+    int i = 0;
+    while(1){
+        unique_lock<mutex> ulock(mtx);
+        cout << "task 2, i = " << i++ << endl;
+        ulock.unlock();
+        delay(time);
+    }
+}
+
+int main(int argc, char const *argv[])
+{
+    future<int> sensor_future = async(launch::async, sensor_read);
+    /*
+    std::async với launch::async sẽ khởi chạy sensor_read trong một thread riêng biệt,
+    nghĩa là hàm `sensor_read` chạy trong một thread riêng mà không làm ảnh hưởng chương trình chính.
+    Kiểu trả về là future<int>, cho phép lấy giá trị kết quả từ sensor_read sau khi hoàn thành.
+    */
+
+    thread t1(task1, 1);     // t1: đại diện cho luồng 1
+    thread t2(task2, 3);     // t2: đại diện cho luồng 2
+
+    int i = 0;
+    while (i<10){
+        unique_lock<mutex> ulock(mtx);
+        cout << "This is main, i = " << i++ << endl;
+        ulock.unlock();
+        delay(1);
+    }
+
+    cout << "Data đã hoàn thành 1: " << sensor_future.get() << endl;// delete
+    // cout << "Data đã hoàn thành 2: " << sensor_future.get() << endl;
+
+    t1.join();
+    t2.join();
+
+    return 0;
+}
+```
+
+<br>
+
+**Ví dụ 2:**
+
+```cpp
+#include <iostream>
+#include <thread>
+#include <future>
+#include <mutex>
+#include <chrono>
+
+using namespace std;
+
+mutex mtx;
+
+int asyncTask(){
+    this_thread::sleep_for(chrono::seconds(3));
+    return 100;
+}
+
+void processResult(int id, shared_future<int> f){
+    unique_lock<mutex> lock(mtx);
+    cout << "Task " << id << ": " << f.get() << endl;
+    lock.unlock();
+}
+/*********************************************************************************************************************
+ * Hàm này nhận hai tham số: id là một số nguyên đại diện cho ID của tác vụ và f là một shared_future<int> dùng để lấy kết 
+ * quả từ tác vụ bất đồng bộ.
+ * Trong hàm, f.get() được gọi để lấy giá trị từ shared_future và in ra kết quả. Kết quả này sẽ là 100 vì đó là giá trị 
+ * trả về của asyncTask.
+ * shared_future cho phép nhiều luồng cùng truy cập vào kết quả của một tác vụ bất đồng bộ.
+ ********************************************************************************************************************/
+
+int main(int argc, char const *argv[])
+{
+    shared_future<int> shared_ft = async(launch::async, asyncTask).share();
+    /*********************************************************************************************************************
+     * Phương thức .share() được gọi trên đối tượng future để chuyển đổi nó thành std::shared_future<int>. Điều này cho 
+     * phép nhiều luồng cùng chia sẻ kết quả của tác vụ mà không làm mất giá trị.
+     ********************************************************************************************************************/
+
+    thread t1(processResult, 1, shared_ft);
+    thread t2(processResult, 2, shared_ft);
+    /*********************************************************************************************************************
+     * t1 và t2 được khởi tạo để chạy hàm processResult với các tham số tương ứng là 1 và 2 cho id, cùng với shared_ft 	 
+     * (kết quả chia sẻ).
+     * Cả hai thread sẽ chạy song song và gọi f.get() từ shared_ft để lấy kết quả từ tác vụ asyncTask. Vì shared_future 
+     * cho phép chia sẻ kết quả, nên việc gọi f.get() trên các thread khác nhau vẫn an toàn và có thể thực hiện đồng 
+     * thời.t1 và t2 được khởi tạo để chạy hàm processResult với các tham số tương ứng là 1 và 2 cho id, cùng với 
+     * shared_ft (kết quả chia sẻ).
+     * Cả hai thread sẽ chạy song song và gọi f.get() từ shared_ft để lấy kết quả từ tác vụ asyncTask. Vì shared_future 
+     * cho phép chia sẻ kết quả, nên việc gọi f.get() trên các thread khác nhau vẫn an toàn và có thể thực hiện đồng thời.
+     *********************************************************************************************************************/
+
+
+    t1.join();
+    t2.join();
+
+    return 0;
+}
+```
 
 </p>
 </details>
