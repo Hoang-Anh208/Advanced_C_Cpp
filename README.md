@@ -4373,7 +4373,7 @@ int main()
 
 - Toán tử delete dùng để giải phóng bộ nhớ đã được cấp phát bằng new. Điều này giúp tránh lãng phí bộ nhớ và hiện tượng rò rỉ bộ nhớ (memory leak).
 
-💻 Ví dụ 1: Cấp phát động một biến đơn
+💻 **Ví dụ 1: Cấp phát động một biến đơn**
 ```cpp
     int *ptr = new int(10);
     /****************************************************
@@ -4394,7 +4394,7 @@ int main()
 
 <br>
 
-💻 Ví dụ 2: Cấp phát động một mảng
+💻 **Ví dụ 2: Cấp phát động một mảng**
 ```cpp
 #include <iostream>
 
@@ -4438,7 +4438,7 @@ int main(int argc, char const *argv[])
 
 <br>
 
-💻 Ví dụ 3: Cấp phát động cho một biến của struct
+💻 **Ví dụ 3: Cấp phát động cho một biến của struct**
 ```cpp
 #include <iostream>
 
@@ -4477,7 +4477,7 @@ int main(int argc, char const *argv[])
 
 <br>
 
-💻 Ví dụ 4: Cấp phát động một mảng
+💻 **Ví dụ 4: Cấp phát động một mảng**
 ```cpp
 #include <iostream>
 
@@ -4525,6 +4525,693 @@ int main(int argc, char const *argv[])
 
 <details><summary><b>3. Class</b></summary>
 <p>
+
+<details><summary><b>3.1. Khái niệm</b></summary>
+<p>
+
+Class là một mô tả trừu tượng của nhóm các đối tượng (object) có cùng bản chất.
+
+Một class bao gồm:
+
+- Các thành phần dữ liệu (biến hay **property**).
+- Các phương thức (hàm thành phần hay **method**).
+
+Khai báo và sử dụng Class:
+```cpp
+class <class_name>{
+   <access_modifier>:
+      <data_type> property1;
+      <data_type> property2;
+      ...
+      <return_type> <method_name_1>(argument1, argument2, ....);
+      <return_type> <method_name_2>(argument1, argument2, ....);
+};
+
+<return_type> <class_name>::<method_name1>(argument1, argument2, ....){
+    ...
+}
+
+<return_type> <class_name>::<method_name1>(argument1, argument2, ....){
+    ...
+}
+```
+
+<br>
+
+💻 **Ví dụ 1:**
+```cpp
+class Person{
+    public:
+        string firstName; // property
+        string lastName;  // property
+        int age;	  // property
+
+        void fullName(){  // method
+            cout << firstName << " " << lastName;
+        }
+}
+```
+
+<br>
+
+💻 **Ví dụ 2:**
+```cpp
+class SinhVien{
+    public:
+        int ID;         // property
+        string name;    // property
+        string lop;     // property
+        void display(); // method
+};
+
+void SinhVien::display(){
+    cout << "MSSV: " << ID << endl;
+    cout << "TEN: " << name << endl;
+    cout << "LOP: " << lop << endl;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>3.2. Phạm vi truy cập</b></summary>
+<p>
+
+<details><summary><b>📚 public</b></summary>
+<p>
+
+- Truy cập từ bên trong class thông qua các method.
+- Truy cập từ bên ngoài class thông qua các object.
+- Các lớp kế thừa có thể truy cập trực tiếp đến các thuộc tính của lớp cha.
+
+💻**Ví dụ 1:**
+```cpp
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class SinhVien{
+    public:
+        int ID;         // property
+        string name;    // property
+        string lop;     // property
+        void display(){ // method
+            cout << "MSSV: " << ID << endl;
+            cout << "TEN: " << name << endl;
+            cout << "LOP: " << lop << endl;
+        }
+};
+
+int main(int argc, char const *argv[]){
+    SinhVien sv; // sv được gọi là object
+    sv.ID = 2010117;
+    sv.name = "Anh";
+    sv.lop = "DD20TD1";
+    sv.display();  
+    return 0;
+}
+```
+
+<br>
+
+💻 **Ví dụ 2:**
+```cpp
+#include <iostream>
+
+using namespace std;
+
+class HinhChuNhat {
+    public:
+        double chieuDai;    // property
+        double chieuRong;   // property
+
+    // Hàm tính diện tích
+    double tinhDienTich(){  // method
+        return chieuDai * chieuRong;
+    }
+
+    void display(); // method
+};
+
+void HinhChuNhat::display(){
+   std::cout << " Hello " << "\n";
+}
+
+int main(){
+    HinhChuNhat hinh1;
+    hinh1.chieuDai = 10.0;
+    hinh1.chieuRong = 5.0;
+    hinh1.display();
+    std::cout << "Dien tich: " << hinh1.tinhDienTich() << '\n';
+    return 0;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 private</b></summary>
+<p>
+
+- Các thuộc tính mà bạn không muốn người khác có thể truy cập đến sẽ được khai báo ở **private**.
+- Những property hay method nằm ở **private** thì chỉ có giá trị tại class và các **object** không thể truy cập đến.
+- Muốn truy cập các thuộc tính **private** thì chỉ có thể truy cập gián tiếp thông qua các **method** hay **constructor** nằm ở phạm vi **public**.
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class SinhVien{
+    private:
+        string ten;
+        string chuyenNganh;
+        int id;
+        double GPA;
+
+    public:
+        SinhVien(string ten, string chuyenNganh);
+
+        string getName(){           // getter method
+            return ten;
+        }
+
+        string getChuyenNganh(){
+            return chuyenNganh;
+        }
+
+        void setGPA(double gpa){    // setter method
+            GPA = gpa;
+        }
+        double getGPA(){            
+            return GPA;
+        }
+
+        int getID(){
+            return id;
+        }
+};
+
+SinhVien::SinhVien(string ten, string chuyenNganh){
+    static int id = 1;
+    SinhVien::id = id;
+    id++;
+
+    SinhVien::ten = ten;
+    SinhVien::chuyenNganh = chuyenNganh;
+}
+
+int main(int argc, char const *argv[])
+{
+    SinhVien sv1("Trung", "DTVT");
+
+    // sv1.ten = "Tuan";        // wrong
+    // sv1.id = 10;             // wrong
+    // sv1.chuyenNganh = "TDH"; // wrong
+
+    cout << "ID: " << sv1.getID() << endl;
+    cout << "Name: " << sv1.getName() << endl;
+    cout << "Chuyen nganh: " << sv1.getChuyenNganh() << endl;
+    return 0;
+}
+```
+
+📝 Khi đã setup một số thông tin và không muốn users có thể truy cập vào và thay đổi được những thông tin thì ta nên khai báo nó ở phạm vi ``` private ```.
+
+📝 Những property nào đã được khai báo ở phạm vi ``` private ``` thì nó sẽ chỉ có giá trị nội bộ trong class và chỉ có những metod nằm trong class mới có thể truy cập để thay đổi được.
+
+📝 Việc ẩn đi những property bằng cách khai báo trong ``` private ``` chính là **tính đóng gói** trong hướng đối tượng.
+
+<br>
+
+</p>
+</details>
+
+<details><summary><b>📚 protected</b></summary>
+<p>
+
+- Các method và property nằm ở protected chỉ có thể truy cập thông qua các class **kế thừa**.
+- Các method và property nằm ở protected không thể truy cập từ các object bên ngoài.
+- Các method và property nằm ở protected có thể truy cập trực tiếp từ các method bên trong class.
+
+💻**Ví dụ 1:**
+```cpp
+#include <iostream>
+
+using namespace std;
+
+class Base{
+    protected:
+        int protectedVar;
+
+    public:
+        Base() : protectedVar(10){}
+};
+
+class Derived : public Base{
+    public: 
+        void showProtectedVar(){
+            cout << "Protected variable: " << protectedVar << endl;
+        }
+};
+
+int main(int argc, char const *argv[])
+{
+    Derived obj;
+    // obj.protectedVar = 10; // wrong
+    obj.showProtectedVar();   // right
+    return 0;
+}
+```
+
+<br>
+
+💻 **Ví dụ 2:**
+```cpp
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class SinhVien{
+    protected:
+        string ten;
+        string chuyenNganh;
+        int id;
+        double GPA;
+
+    public:
+        SinhVien(string ten, string chuyenNganh);
+
+        string getName(){           // getter method
+            return ten;
+        }
+
+        string getChuyenNganh(){
+            return chuyenNganh;
+        }
+
+        void setGPA(double gpa){    // setter method
+            GPA = gpa;
+        }
+        double getGPA(){            
+            return GPA;
+        }
+
+        int getID(){
+            return id;
+        }
+};
+
+SinhVien::SinhVien(string ten, string chuyenNganh){
+    static int id = 1;
+    SinhVien::id = id;
+    id++;
+
+    SinhVien::ten = ten;
+    SinhVien::chuyenNganh = chuyenNganh;
+}
+
+int main(int argc, char const *argv[])
+{
+    SinhVien sv1("Trung", "DTVT");
+
+    // sv1.ten = "Tuan";        // wrong
+    // sv1.id = 10;             // wrong
+    // sv1.chuyenNganh = "TDH"; // wrong
+
+    cout << "ID: " << sv1.getID() << endl;
+    cout << "Name: " << sv1.getName() << endl;
+    cout << "Chuyen nganh: " << sv1.getChuyenNganh() << endl;
+    return 0;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+</p>
+</details>
+
+<details><summary><b>3.3. Phương thức khởi tạo (Constructor)</b></summary>
+<p>
+
+Constructor là một method có tên trùng với tên của class.
+
+Constructor có thể được khai báo ở cả ba phạm vi public, protected, private.
+
+Constructor thường được sử dụng để khởi tạo giá trị ban đầu cho các property trong class.
+
+**Constructor trong phạm vi public**: 
+
+- Constructor sẽ được tự động gọi khi khởi tạo object.
+- Constructor có thể có tham số truyền vào hoặc không.
+
+💻 **Constructor không có tham số truyền vào**
+```cpp
+#include <iostream>
+
+using namespace std;
+
+class HinhChuNhat{
+    public:
+        double chieuDai;
+        double chieuRong;
+
+        // HinhChuNhat(){				// cách 1
+        //     chieuDai  = 10;
+        //     chieuRong = 9;
+        // }
+
+        HinhChuNhat(): chieuDai(10), chieuRong(9){}	// cách 2
+
+        // Hàm tính diện tích
+        double tinhDienTich(){
+            return chieuDai * chieuRong;
+        }
+};
+int main(){
+    HinhChuNhat hinh1;
+    cout << "Chieu dai: " << hinh1.chieuDai << '\n';
+    cout << "Chieu rong: " << hinh1.chieuRong << '\n';
+    cout << "Dien tich: " << hinh1.tinhDienTich() << '\n';
+    return 0;
+}
+```
+
+<br>
+
+💻 **Constructor có tham số truyền vào**
+```cpp
+#include <iostream>
+
+using namespace std;
+
+class HinhChuNhat{
+    public:
+        double chieuDai;
+        double chieuRong;
+
+        HinhChuNhat(int dai = 3, int rong = 5);
+
+        double tinhDienTich(){
+            return chieuDai * chieuRong;
+        }
+};
+
+HinhChuNhat::HinhChuNhat(int dai, int rong){
+    chieuDai = dai;
+    chieuRong = rong;
+}
+
+int main(){
+    HinhChuNhat hinh1; 		// lấy giá trị mặc định (3,5)
+    cout << "Chieu dai: " << hinh1.chieuDai << '\n';
+    cout << "Chieu rong: " << hinh1.chieuRong << '\n';
+    cout << "Dien tich: " << hinh1.tinhDienTich() << '\n';
+
+    HinhChuNhat hinh2(10,20); 	// lấy giá trị mới
+    cout << "Chieu dai: " << hinh2.chieuDai << '\n';
+    cout << "Chieu rong: " << hinh2.chieuRong << '\n';
+    cout << "Dien tich: " << hinh2.tinhDienTich() << '\n';
+
+    int a,b;
+    cout << "Nhap chieu dai: ";  cin >> a;
+    cout << "Nhap chieu rong: "; cin >> b;
+    HinhChuNhat hinh3(a,b); 	// lấy giá trị mới nhập từ bàn phím
+    cout << "Chieu dai: " << hinh3.chieuDai << '\n';
+    cout << "Chieu rong: " << hinh3.chieuRong << '\n';
+    cout << "Dien tich: " << hinh3.tinhDienTich() << '\n';
+    return 0;
+}
+```
+**Kết quả**:
+```cpp
+Chieu dai: 3
+Chieu rong: 5
+Dien tich: 15
+
+Chieu dai: 10
+Chieu rong: 20
+Dien tich: 200
+
+Nhap chieu dai: 7
+Nhap chieu rong: 8
+Chieu dai: 7
+Chieu rong: 8
+Dien tich: 56
+```
+
+📝 Khi constructor có tham số truyền vào và gán giá trị cụ thể:
+
+📝 Nếu object được khởi tạo không có tham số truyền vào thì mặc định lấy 2 giá trị đã khởi tạo phía trên.
+
+📝 Nếu object được khởi tạo và truyền vào giá trị mới thì nó sẽ ghi đè lên giá trị cũ và các lệnh thực thi phía sau sẽ lấy giá trị mới.
+
+
+- **Constructor trong phạm vi protected**: object không thể được khởi tạo trực tiếp từ bên ngoài class, mà chỉ có thể được khởi tạo từ các class kế thừa hoặc các method bên trong class đó.
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+
+using namespace std;
+
+class Base {
+    protected:
+        Base(){
+            cout << "Protected constructor called!" << endl;
+        }
+};
+
+class Derived : public Base {
+    public:
+        Derived() : Base(){  // Có thể gọi constructor protected của class Base
+            cout << "Derived constructor called!" << endl;
+        }
+};
+
+int main() {
+    // Base obj;  // Lỗi: Không thể khởi tạo đối tượng Base từ bên ngoài
+    Derived obj;  // Hợp lệ: Có thể khởi tạo Derived, class con của Base
+    return 0;
+}
+```
+
+- **Constructor trong phạm vi private**: không ai có thể khởi tạo đối tượng của class từ bên ngoài, kể cả class con. Thường được sử dụng trong các singleton pattern hoặc các trường hợp mà muốn kiểm soát chặt chẽ việc tạo đối tượng.
+
+💻 **Ví dụ:**
+```cpp
+class MyClass {
+private:
+    MyClass() {
+        cout << "Private constructor called!" << endl;
+    }
+
+public:
+    static MyClass createInstance() {
+        return MyClass();  // Có thể khởi tạo từ bên trong class với method static
+    }
+};
+
+int main() {
+    // MyClass obj;  // Lỗi: Không thể khởi tạo đối tượng từ bên ngoài
+    MyClass obj = MyClass::createInstance();  // Hợp lệ: Sử dụng phương thức static để tạo đối tượng
+    return 0;
+}
+```
+
+</p>
+</details>
+
+<details><summary><b>3.4. Phương thức hủy (Destructor)</b></summary>
+<p>
+
+- Tương tự với Constructor, Destructor cũng là một method và có tên trùng với tên class nhưng có thể ký tự **~** ở phía trước tên.
+- Destructor khi khai báo trong phạm vi public sẽ được tự động gọi khi object được giải phóng.
+- Trong class, object bản chất cũng là 1 biến cục bộ nên nó sẽ được lưu trong phân vùng Stack và khi kết thúc hàm thì cũng bị thu hồi nhưng đối với **destructor**, trước khi thu hồi sẽ tự động khởi chạy.
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class HinhChuNhat {
+    public:
+    string name;
+    double chieuDai;
+    double chieuRong;
+
+    HinhChuNhat(string ten){ 
+        HinhChuNhat::name = ten;
+        cout << "Khoi tao object: " << name << endl;
+    }
+
+    ~HinhChuNhat() {
+        std::cout << "Destructor: " << name << '\n';
+    }
+
+
+    // Hàm tính diện tích
+    double tinhDienTich() {
+        return chieuDai * chieuRong;
+    }
+};
+
+void test(){
+    HinhChuNhat hinh1("Hinh1");
+    HinhChuNhat hinh2("Hinh2");
+}
+
+int main(int argc, char const *argv[])
+{
+    test();
+    return 0;
+}
+```
+**Kết quả:**
+```cpp
+Khoi tao object: Hinh1
+Khoi tao object: Hinh2
+Destructor: Hinh2
+Destructor: Hinh1
+```
+
+📝 ``` hinh1("Hinh1") ```, ``` hinh2("Hinh2") ``` bản chất đều 2 biến cục bộ và lưu trong Stack
+
+📝 object ``` hinh1("Hinh1") ``` được khởi tạo trước nên được đưa vào Stack trước, còn object ``` hinh2("Hinh2") ``` khởi tạo sau nên đưa vào Stack sau cùng nhưng khi lấy ra thì object ``` hinh2("Hinh2") ``` lại được lấy ra trước.
+
+<br> 
+
+</p>
+</details>
+
+<details><summary><b>3.5. Static trong Class</b></summary>
+<p>
+
+<details><summary><b>📚 Static property</b></summary>
+<p>
+
+Khi một property trong class được khai báo với từ khóa static:
+
+- Tất cả các object sẽ dùng chung địa chỉ của property.
+- Địa chỉ của property phải được khởi tạo trước khi khởi tạo object.
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+class HinhChuNhat { 
+
+    public:
+        double chieuDai;
+        double chieuRong;
+        static int var;
+};
+
+int HinhChuNhat::var; // 0xa1
+
+int main()
+{
+    HinhChuNhat hinh1; // 0x01
+    HinhChuNhat hinh2; // 0x08
+
+    cout << "address of object hinh 1: " << &hinh1 << '\n';
+    cout << "address of chieu dai 1: " << &hinh1.chieuDai << '\n'; 
+    cout << "address of chieu rong 1: " << &hinh1.chieuRong << '\n';
+    cout << "address of chieu dai 2: " << &hinh2.chieuDai << '\n'; 
+    cout << "address of chieu rong 12: " << &hinh2.chieuRong << '\n';
+
+    cout << "address of var: " << &hinh1.var << '\n'; 
+    cout << "address of var: " << &hinh2.var << '\n'; 
+
+    return 0;
+}
+```
+**Kết quả**:
+```cpp
+address of object hinh 1: 0x7609ffb80
+address of chieu dai 1: 0x7609ffb80
+address of chieu rong 1: 0x7609ffb88
+address of chieu dai 2: 0x7609ffb70
+address of chieu rong 12: 0x7609ffb78
+address of var: 0x7ff70cbc7030
+address of var: 0x7ff70cbc7030
+```
+
+![image](https://github.com/user-attachments/assets/1ed9e3c7-c0b0-483a-8df2-cc0e9283a1fe)
+
+
+</p>
+</details>
+
+<details><summary><b>📚 Static method</b></summary>
+<p>
+
+- Static method là một method thuộc về class thay vì object của class.
+- Static method có thể gọi ra mà không cần tạo đối tượng của class.
+- Static method chỉ có thể truy cập các thành viên static khác của class (cả thuộc tính và phương thức).
+- Static method sẽ không có con trỏ ``` this ``` vì không được gọi từ đối tượng.
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+
+using namespace std;
+
+class MyClass {
+public:
+    // Static method
+    static void showMessage() {
+        cout << "This is a static method." << endl;
+    }
+
+    // Static variable
+    static int count;
+
+    // Static method to manipulate static variable
+    static void increaseCount() {
+        count++;
+    }
+};
+
+// Khởi tạo biến static
+int MyClass::count = 0;
+
+int main()
+{
+    // Gọi static method mà không cần tạo đối tượng
+    MyClass::showMessage();
+
+    // Gọi static method để thao tác với biến static
+    MyClass::increaseCount();
+    cout << "Count: " << MyClass::count << endl;
+
+    return 0;
+}
+```
+
+<br>
+
+</p>
+</details>
+
+</p>
+</details>
 
 </p>
 </details>
