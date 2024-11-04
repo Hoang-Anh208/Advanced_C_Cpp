@@ -7457,6 +7457,76 @@ int main(int argc, char const *argv[]){
 <details><summary><b>9. Lambda</b></summary>
 <p>
 
+Lambda là một tính năng mạnh mẽ được thêm vào ngôn ngữ lập trình C++ từ phiên bản C++11. Lambda cho phép định nghĩa hàm ngắn gọn (anonymous function) mà không cần phải viết một hàm riêng biệt. Cú pháp của lambda rất linh hoạt và có thể được sử dụng để viết mã ngắn gọn và dễ đọc.
+
+Cú pháp:
+```cpp
+[capture](parameters) -> return_type{
+	// function body
+}
+```
+
+**Capture**: Cho phép bắt giữ biến từ môi trường xung quanh vào lambda
+
+- []: Không bắt giữ bất kỳ biến nào từ môi trường xung quanh
+- [var]: Bắt giữ biến var theo giá trị.
+- [&var]: Bắt giữ biến var theo tham chiếu.
+- [=]: Bắt giữ tất cả biến theo giá trị.
+- [&]: Bắt giữ tất cả biến theo tham chiếu.
+
+**Parameters (parameters)**: Tương tự như định nghĩa hàm, có thể bao gồm các tham số của lambda.
+
+**Return type (return_type)**: Kiểu dữ liệu trả về của lambda. Có thể bị bỏ qua nếu không cần.
+
+**Function body**: Đặt trong dấu ngoặc nhọn {} và chứa mã nguồn thực thi của lambda.
+
+<br>
+
+💻 **Ví dụ:**
+```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int main(int argc, char const *argv[])
+{
+    vector<int> arr = {32, 71, 12, 45, 26, 80, 53, 33};
+
+    vector<int>::iterator it;
+
+    cout << "vector contains: ";
+    for (it = arr.begin(); it != arr.end(); it++){
+        cout << ' ' << *it;
+    }
+
+    cout << '\n';
+
+    sort(arr.begin(), arr.end(), [](int i, int j)->bool{
+        return (i<j);
+    });
+
+    cout << "vector contains: ";
+    for (it = arr.begin(); it != arr.end(); it++){
+        cout << ' ' << *it;
+    }
+
+    cout << '\n';
+
+    sort(arr.begin(), arr.end(), [](int i, int j)->bool{
+        return (i>j);
+    });
+
+    cout << "vector contains: ";
+    for (it = arr.begin(); it != arr.end(); it++){
+        cout << ' ' << *it;
+    }
+
+    return 0;
+}
+```
+
 </p>
 </details>
 
